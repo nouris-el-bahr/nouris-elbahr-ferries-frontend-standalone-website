@@ -5,6 +5,7 @@ import { Card, CardContent, FormField } from "@/shared";
 import { MESSAGES } from "@/constants";
 
 interface PaymentReportFormProps {
+  stepNumber?: number;
   factDate: string;
   periodStart: string;
   periodEnd: string;
@@ -15,6 +16,7 @@ interface PaymentReportFormProps {
 }
 
 export const PaymentReportForm: React.FC<PaymentReportFormProps> = ({
+  stepNumber,
   factDate,
   periodStart,
   periodEnd,
@@ -24,12 +26,13 @@ export const PaymentReportForm: React.FC<PaymentReportFormProps> = ({
   onPeriodEndChange,
 }) => {
   return (
-    <Card>
+    <Card className="mb-6">
       <CardContent className="pt-6">
         <div className="space-y-4">
-          <h3 className="font-semibold text-nouris-navy mb-4">
+          <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
+            {stepNumber && <span className="step-badge">{stepNumber}</span>}
             {MESSAGES.REPORTS.PAYMENT.BILLING_PERIOD}
-          </h3>
+          </h2>
 
           <div className="grid grid-cols-3 gap-4">
             <FormField

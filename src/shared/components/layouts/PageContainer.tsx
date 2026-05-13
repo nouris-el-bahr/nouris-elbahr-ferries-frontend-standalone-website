@@ -19,7 +19,7 @@ const maxWidthClasses = {
 export function PageContainer({
   children,
   className,
-  maxWidth = "lg",
+  maxWidth = "full",
 }: PageContainerProps) {
   return (
     <div className={cn("px-8 py-8", maxWidthClasses[maxWidth], className)}>

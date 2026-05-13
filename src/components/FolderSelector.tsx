@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { FolderOpen, X } from "lucide-react";
+import { Button } from "@/shared";
 
 interface FolderSelectorProps {
   label: string;
@@ -72,15 +73,16 @@ export default function FolderSelector({
             <p className="text-sm text-gray-400">Aucun dossier sélectionné</p>
           )}
         </div>
-        <button
-          type="button"
+        <Button
           onClick={handleSelectFolder}
           disabled={disabled}
-          className="btn-navy shrink-0 px-4"
+          variant="secondary"
+          size="sm"
+          className="shrink-0"
+          leftIcon={<FolderOpen size={15} />}
         >
-          <FolderOpen size={15} />
           Sélectionner
-        </button>
+        </Button>
       </div>
       {hint && <p className="text-xs text-gray-400 mt-1">{hint}</p>}
 

@@ -105,7 +105,7 @@ export default function HomePage() {
         title="Tableau de bord"
         description="Mode hors ligne - Gestion des rapports Nouris El Bahr"
       />
-      <PageContainer maxWidth="lg">
+      <PageContainer>
 
       <div className="grid grid-cols-3 gap-4 mb-8">
         {statCards.map((card) => (

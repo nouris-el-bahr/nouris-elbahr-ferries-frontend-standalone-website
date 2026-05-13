@@ -6,6 +6,8 @@ import FolderSelector from "@/components/FolderSelector";
 import { MESSAGES } from "@/constants";
 
 interface ReferenceFolderSelectorProps {
+  stepNumber?: number;
+  title?: string;
   label: string;
   folderPath: string;
   files: File[];
@@ -16,6 +18,8 @@ interface ReferenceFolderSelectorProps {
 }
 
 export const ReferenceFileSelector: React.FC<ReferenceFolderSelectorProps> = ({
+  stepNumber,
+  title,
   label,
   folderPath,
   files,
@@ -26,8 +30,14 @@ export const ReferenceFileSelector: React.FC<ReferenceFolderSelectorProps> = ({
 }) => {
   return (
     <>
-      <Card>
-        <CardContent className="pt-6">
+      <Card className="mb-6">
+        {stepNumber && title && (
+          <h2 className="font-semibold text-nouris-navy mb-4 px-6 pt-6 flex items-center gap-2">
+            <span className="step-badge">{stepNumber}</span>
+            {title}
+          </h2>
+        )}
+        <CardContent className={stepNumber && title ? "" : "pt-6"}>
           <FolderSelector
             label={label}
             hint={MESSAGES.REPORTS.PAYMENT.REFERENCE_FILES_HINT}
@@ -38,7 +48,7 @@ export const ReferenceFileSelector: React.FC<ReferenceFolderSelectorProps> = ({
       </Card>
 
       {folderPath && (
-        <Card>
+        <Card className="mb-6">
           <CardContent className="pt-6">
             <div className="space-y-4">
               <div>
@@ -64,9 +74,9 @@ export const ReferenceFileSelector: React.FC<ReferenceFolderSelectorProps> = ({
                   {files.map((file) => (
                     <div
                       key={file.name}
-                      className="flex items-center gap-2 p-3 rounded bg-nouris-navy/10 border border-nouris-navy/20"
+                      className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 border border-gray-200"
                     >
-                      <span className="text-nouris-navy">✓</span>
+                      <span className="text-gray-700">✓</span>
                       <span className="text-sm font-mono text-gray-800">
                         {file.name}
                       </span>

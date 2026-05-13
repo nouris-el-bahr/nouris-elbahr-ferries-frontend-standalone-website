@@ -11,7 +11,7 @@ import {
   runPaymentReport,
 } from "@/store/slices/paymentSlice";
 import { addResults } from "@/store/slices/resultsSlice";
-import { PageContainer, PageHeader, Button, Alert, Input, Spinner } from "@/shared";
+import { PageContainer, PageHeader, Button, Alert, Input, Spinner, Card } from "@/shared";
 import {
   PaymentReportForm,
   ReferenceFileSelector,
@@ -144,7 +144,7 @@ export default function PaymentPage() {
         description={MESSAGES.REPORTS.PAYMENT.DESCRIPTION}
       />
 
-      <PageContainer maxWidth="lg">
+      <PageContainer>
         <StepIndicator
           steps={steps}
           currentStep={refFolderPath === "" ? 1 : invoiceFile === null ? 2 : 3}
@@ -163,6 +163,8 @@ export default function PaymentPage() {
 
         {/* Step 1: Reference Folder */}
         <ReferenceFileSelector
+          stepNumber={1}
+          title="Dossier de rapports"
           label="Dossier de rapports"
           folderPath={refFolderPath}
           files={refFiles}
@@ -177,28 +179,31 @@ export default function PaymentPage() {
 
         {/* Step 2: Invoice File */}
         {refFolderPath && (
-          <div className="card mb-5 mt-6">
-            <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
-              <span className="step-badge">2</span>
-              {MESSAGES.REPORTS.PAYMENT.SELECT_INVOICE_FILE}
-            </h2>
-            <Input
-              type="file"
-              accept=".csv,.xlsx,.xls"
-              label="Fichier CSV ou Excel"
-              helperText={invoiceFile ? `✓ ${invoiceFile.name}` : undefined}
-              onChange={(e) => setInvoiceFile(e.target.files?.[0] || null)}
-              disabled={pay.running}
-            />
-            {errors.invoice && (
-              <p className="text-error text-sm mt-2">{errors.invoice}</p>
-            )}
-          </div>
+          <Card className="mb-6">
+            <div className="px-6 py-4">
+              <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
+                <span className="step-badge">2</span>
+                {MESSAGES.REPORTS.PAYMENT.SELECT_INVOICE_FILE}
+              </h2>
+              <Input
+                type="file"
+                accept=".csv,.xlsx,.xls"
+                label="Fichier CSV ou Excel"
+                helperText={invoiceFile ? `✓ ${invoiceFile.name}` : undefined}
+                onChange={(e) => setInvoiceFile(e.target.files?.[0] || null)}
+                disabled={pay.running}
+              />
+              {errors.invoice && (
+                <p className="text-error text-sm mt-2">{errors.invoice}</p>
+              )}
+            </div>
+          </Card>
         )}
 
         {/* Step 3: Dates */}
         {invoiceFile && (
           <PaymentReportForm
+            stepNumber={3}
             factDate={pay.factDate}
             periodStart={pay.periodStart}
             periodEnd={pay.periodEnd}
@@ -211,19 +216,21 @@ export default function PaymentPage() {
 
         {/* Run Button */}
         {invoiceFile && (
-          <div className="card mb-5 mt-6">
-            <Button
-              onClick={handleRun}
-              disabled={pay.running || refFiles.length === 0 || !invoiceFile}
-              isLoading={pay.running}
-              isFullWidth
-              variant="primary"
-            >
-              {pay.running
-                ? MESSAGES.REPORTS.PAYMENT.GENERATING
-                : MESSAGES.REPORTS.PAYMENT.GENERATE_BUTTON}
-            </Button>
-          </div>
+          <Card className="mb-6">
+            <div className="px-6 py-4">
+              <Button
+                onClick={handleRun}
+                disabled={pay.running || refFiles.length === 0 || !invoiceFile}
+                isLoading={pay.running}
+                isFullWidth
+                variant="primary"
+              >
+                {pay.running
+                  ? MESSAGES.REPORTS.PAYMENT.GENERATING
+                  : MESSAGES.REPORTS.PAYMENT.GENERATE_BUTTON}
+              </Button>
+            </div>
+          </Card>
         )}
 
         {/* Results */}

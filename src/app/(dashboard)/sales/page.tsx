@@ -13,7 +13,7 @@ import {
   runSalesReport,
 } from "@/store/slices/salesSlice";
 import { addResults } from "@/store/slices/resultsSlice";
-import { PageContainer, PageHeader, Button, Alert, Spinner } from "@/shared";
+import { PageContainer, PageHeader, Button, Alert, Spinner, Card } from "@/shared";
 import {
   SalesReportForm,
   StepIndicator,
@@ -147,7 +147,7 @@ export default function SalesPage() {
         description={MESSAGES.REPORTS.SALES.DESCRIPTION}
       />
 
-      <PageContainer maxWidth="lg">
+      <PageContainer>
         <StepIndicator
           steps={steps}
           currentStep={
@@ -173,25 +173,29 @@ export default function SalesPage() {
         )}
 
         {/* Step 1: File Selection */}
-        <div className="card mb-5">
-          <h2 className="font-semibold text-nouris-navy mb-4">
-            1. {MESSAGES.REPORTS.SALES.SELECT_FILES}
-          </h2>
-          <FolderSelector
-            label="Dossier de ventes"
-            hint="Sélectionnez le dossier contenant vos fichiers CSV ou Excel"
-            onFolderSelect={(path, files) => {
-              setSalesFolderPath(path);
-              setSalesFolderFiles(files);
-            }}
-            disabled={sales.running}
-          />
-        </div>
+        <Card className="mb-6">
+          <div className="px-6 py-4">
+            <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
+              <span className="step-badge">1</span>
+              {MESSAGES.REPORTS.SALES.SELECT_FILES}
+            </h2>
+            <FolderSelector
+              label="Dossier de ventes"
+              hint="Sélectionnez le dossier contenant vos fichiers CSV ou Excel"
+              onFolderSelect={(path, files) => {
+                setSalesFolderPath(path);
+                setSalesFolderFiles(files);
+              }}
+              disabled={sales.running}
+            />
+          </div>
+        </Card>
 
         {/* Step 2: Settings */}
         {salesFolderPath && (
           <>
             <SalesReportForm
+              stepNumber={2}
               downloadDate={sales.downloadDate}
               format={sales.format}
               vatSuffix={sales.vatSuffix}
@@ -208,47 +212,52 @@ export default function SalesPage() {
             />
 
             {/* List Files */}
-            <div className="card mb-5 mt-6">
-              <h2 className="font-semibold text-nouris-navy mb-4">
-                3. {MESSAGES.REPORTS.SALES.FILES_DETECTED}
-              </h2>
-              {salesFiles.length > 0 ? (
-                <div className="space-y-2 mb-4">
-                  {salesFiles.map((f) => (
-                    <div
-                      key={f.name}
-                      className="text-sm text-gray-700 p-2 bg-gray-50 rounded flex items-center gap-2"
-                    >
-                      <span>✓</span>
-                      <span>{f.name}</span>
-                    </div>
-                  ))}
-                  <p className="text-xs text-gray-500 mt-2">
-                    {salesFiles.length} fichier(s) prêt(s)
+            <Card className="mb-6">
+              <div className="px-6 py-4">
+                <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
+                  <span className="step-badge">3</span>
+                  {MESSAGES.REPORTS.SALES.FILES_DETECTED}
+                </h2>
+                {salesFiles.length > 0 ? (
+                  <div className="space-y-2 mb-4">
+                    {salesFiles.map((f) => (
+                      <div
+                        key={f.name}
+                        className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 border border-gray-200 text-sm text-gray-700"
+                      >
+                        <span>✓</span>
+                        <span>{f.name}</span>
+                      </div>
+                    ))}
+                    <p className="text-xs text-gray-500 mt-2">
+                      {salesFiles.length} fichier(s) prêt(s)
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 py-4">
+                    Aucun fichier {sales.format === "Csv" ? "CSV" : "Excel"}{" "}
+                    trouvé
                   </p>
-                </div>
-              ) : (
-                <p className="text-sm text-gray-500 py-4">
-                  Aucun fichier {sales.format === "Csv" ? "CSV" : "Excel"}{" "}
-                  trouvé
-                </p>
-              )}
-            </div>
+                )}
+              </div>
+            </Card>
 
             {/* Run Button */}
-            <div className="card mb-5">
-              <Button
-                onClick={handleRun}
-                disabled={sales.running || salesFolderFiles === undefined}
-                isLoading={sales.running}
-                isFullWidth
-                variant="primary"
-              >
-                {sales.running
-                  ? MESSAGES.REPORTS.SALES.GENERATING
-                  : MESSAGES.REPORTS.SALES.GENERATE_BUTTON}
-              </Button>
-            </div>
+            <Card className="mb-6">
+              <div className="px-6 py-4">
+                <Button
+                  onClick={handleRun}
+                  disabled={sales.running || salesFolderFiles === undefined}
+                  isLoading={sales.running}
+                  isFullWidth
+                  variant="primary"
+                >
+                  {sales.running
+                    ? MESSAGES.REPORTS.SALES.GENERATING
+                    : MESSAGES.REPORTS.SALES.GENERATE_BUTTON}
+                </Button>
+              </div>
+            </Card>
           </>
         )}
 

@@ -24,6 +24,7 @@ import {
   Button,
   Alert,
   Input,
+  Spinner,
 } from "@/shared";
 import {
   ReportResults,
@@ -290,6 +291,13 @@ export default function ConsolidatedPage() {
           </div>
         )}
       </PageContainer>
+
+      {/* Processing Overlay */}
+      {running && (
+        <div className="fixed inset-0 bg-white/60 flex items-center justify-center z-50">
+          <Spinner size="lg" text="Génération en cours..." />
+        </div>
+      )}
     </>
   );
 }

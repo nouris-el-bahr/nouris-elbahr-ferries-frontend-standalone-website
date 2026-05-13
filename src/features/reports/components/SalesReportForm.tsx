@@ -5,6 +5,7 @@ import { Card, CardContent, FormField, Select, Checkbox } from "@/shared";
 import { MESSAGES, SALES_MODES } from "@/constants";
 
 interface SalesReportFormProps {
+  stepNumber?: number;
   downloadDate: string;
   format: string;
   vatSuffix: string;
@@ -19,6 +20,7 @@ interface SalesReportFormProps {
 }
 
 export const SalesReportForm: React.FC<SalesReportFormProps> = ({
+  stepNumber,
   downloadDate,
   format,
   vatSuffix,
@@ -32,12 +34,13 @@ export const SalesReportForm: React.FC<SalesReportFormProps> = ({
   onOnlyCheckedInChange,
 }) => {
   return (
-    <Card>
+    <Card className="mb-6">
       <CardContent className="pt-6">
         <div className="space-y-4">
-          <h3 className="font-semibold text-nouris-navy mb-4">
+          <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
+            {stepNumber && <span className="step-badge">{stepNumber}</span>}
             {MESSAGES.REPORTS.SALES.PARAMETERS}
-          </h3>
+          </h2>
 
           <div className="grid grid-cols-2 gap-4">
             <FormField
