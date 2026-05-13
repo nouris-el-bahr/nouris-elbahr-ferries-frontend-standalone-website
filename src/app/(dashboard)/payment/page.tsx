@@ -165,8 +165,8 @@ export default function PaymentPage() {
         {/* Step 1: Reference Folder */}
         <ReferenceFileSelector
           stepNumber={1}
-          title="Dossier de rapports"
-          label="Dossier de rapports"
+          title={MESSAGES.REPORTS.PAYMENT.SELECT_REFERENCE_FOLDER}
+          label={MESSAGES.REPORTS.PAYMENT.SELECT_REFERENCE_FOLDER}
           folderPath={refFolderPath}
           files={refFiles}
           fileType={refFileType}

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, Select } from "@/shared";
+import { Card, Select } from "@/shared";
 import FolderSelector from "@/components/FolderSelector";
 import { MESSAGES } from "@/constants";
 
@@ -31,25 +31,25 @@ export const ReferenceFileSelector: React.FC<ReferenceFolderSelectorProps> = ({
   return (
     <>
       <Card className="mb-6">
-        {stepNumber && title && (
-          <h2 className="font-semibold text-nouris-navy mb-4 px-6 pt-6 flex items-center gap-2">
-            <span className="step-badge">{stepNumber}</span>
-            {title}
-          </h2>
-        )}
-        <CardContent className={stepNumber && title ? "" : "pt-6"}>
+        <div className="px-6 py-4">
+          {stepNumber && title && (
+            <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
+              <span className="step-badge">{stepNumber}</span>
+              {title}
+            </h2>
+          )}
           <FolderSelector
             label={label}
             hint={MESSAGES.REPORTS.PAYMENT.REFERENCE_FILES_HINT}
             onFolderSelect={onFolderSelect}
             disabled={disabled}
           />
-        </CardContent>
+        </div>
       </Card>
 
       {folderPath && (
         <Card className="mb-6">
-          <CardContent className="pt-6">
+          <div className="px-6 py-4">
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -93,7 +93,7 @@ export const ReferenceFileSelector: React.FC<ReferenceFolderSelectorProps> = ({
                 </p>
               )}
             </div>
-          </CardContent>
+          </div>
         </Card>
       )}
     </>

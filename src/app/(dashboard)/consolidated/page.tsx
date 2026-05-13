@@ -29,6 +29,7 @@ import {
   ReportResults,
   StepIndicator,
 } from "@/features/reports/components";
+import { MESSAGES } from "@/constants";
 
 export default function ConsolidatedPage() {
   const dispatch = useAppDispatch();
@@ -91,14 +92,14 @@ export default function ConsolidatedPage() {
   const error = snaps.error || pay.error;
 
   const steps = [
-    { number: 1, label: "Snapshot", completed: !!snaps.snapshotFile },
-    { number: 2, label: "Facture", completed: !!invoiceFile },
+    { number: 1, label: MESSAGES.REPORTS.CONSOLIDATED.SELECT_SNAPSHOT, completed: !!snaps.snapshotFile },
+    { number: 2, label: MESSAGES.REPORTS.CONSOLIDATED.SELECT_INVOICE_FILE, completed: !!invoiceFile },
     {
       number: 3,
-      label: "Dates",
+      label: MESSAGES.REPORTS.CONSOLIDATED.BILLING_PERIOD,
       completed: !!pay.factDate && !!pay.periodStart && !!pay.periodEnd,
     },
-    { number: 4, label: "Générer", completed: !!result },
+    { number: 4, label: MESSAGES.REPORTS.CONSOLIDATED.GENERATE_BUTTON, completed: !!result },
   ];
 
   const currentStep = !snaps.snapshotFile
@@ -114,8 +115,8 @@ export default function ConsolidatedPage() {
   return (
     <>
       <PageHeader
-        title="Facture consolidée"
-        description="Générez une facture consolidée paiement + ventes"
+        title={MESSAGES.REPORTS.CONSOLIDATED.TITLE}
+        description={MESSAGES.REPORTS.CONSOLIDATED.DESCRIPTION}
       />
 
       <PageContainer>
@@ -124,7 +125,7 @@ export default function ConsolidatedPage() {
         {error && (
           <Alert
             variant="error"
-            title="Erreur"
+            title={MESSAGES.COMMON.ERROR}
             description={error}
             dismissible
             onClose={() => dispatch(clearError())}
@@ -137,12 +138,12 @@ export default function ConsolidatedPage() {
           <div className="px-6 py-4">
             <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
               <span className="step-badge">1</span>
-              Snapshot de référence
+              {MESSAGES.REPORTS.CONSOLIDATED.SELECT_SNAPSHOT}
             </h2>
             <Input
               type="file"
               accept=".csv"
-              label="Charger le snapshot CSV"
+              label={MESSAGES.REPORTS.CONSOLIDATED.SELECT_SNAPSHOT}
               helperText={snaps.snapshotFile ? `✓ ${snaps.snapshotFile.name}` : undefined}
               onChange={(e) => {
                 const files = (e.target as HTMLInputElement).files;
@@ -160,7 +161,7 @@ export default function ConsolidatedPage() {
             <div className="px-6 py-4">
               <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
                 <span className="step-badge">2</span>
-                Fichier de facture
+                {MESSAGES.REPORTS.CONSOLIDATED.SELECT_INVOICE_FILE}
               </h2>
               <Input
                 type="file"
@@ -182,7 +183,7 @@ export default function ConsolidatedPage() {
             <div className="px-6 py-4">
               <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
                 <span className="step-badge">3</span>
-                Facture de ventes (optionnel)
+                {MESSAGES.REPORTS.CONSOLIDATED.SELECT_SALES_FILE}
               </h2>
               <Input
                 type="file"
@@ -204,25 +205,25 @@ export default function ConsolidatedPage() {
             <div className="px-6 py-4">
               <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
                 <span className="step-badge">4</span>
-                Période de facturation
+                {MESSAGES.REPORTS.CONSOLIDATED.BILLING_PERIOD}
               </h2>
               <div className="grid grid-cols-3 gap-4">
                 <Input
                   type="date"
                   value={pay.factDate}
-                  label="Date de téléchargement"
+                  label={MESSAGES.REPORTS.CONSOLIDATED.DOWNLOAD_DATE}
                   onChange={(e) => dispatch(setFactDate(e.target.value))}
                 />
                 <Input
                   type="date"
                   value={pay.periodStart}
-                  label="Début"
+                  label={MESSAGES.REPORTS.CONSOLIDATED.PERIOD_START}
                   onChange={(e) => dispatch(setPeriodStart(e.target.value))}
                 />
                 <Input
                   type="date"
                   value={pay.periodEnd}
-                  label="Fin"
+                  label={MESSAGES.REPORTS.CONSOLIDATED.PERIOD_END}
                   onChange={(e) => dispatch(setPeriodEnd(e.target.value))}
                 />
               </div>
@@ -242,8 +243,8 @@ export default function ConsolidatedPage() {
                 variant="primary"
               >
                 {running
-                  ? "Génération en cours..."
-                  : "Générer la facture consolidée"}
+                  ? MESSAGES.REPORTS.CONSOLIDATED.GENERATING
+                  : MESSAGES.REPORTS.CONSOLIDATED.GENERATE_BUTTON}
               </Button>
             </div>
           </Card>
@@ -253,7 +254,7 @@ export default function ConsolidatedPage() {
         {result && (
           <div className="animate-slideInUp">
             <ReportResults
-              title="Facture consolidée générée"
+              title={MESSAGES.REPORTS.CONSOLIDATED.SUCCESS}
               files={[
                 {
                   name: result.consolidatedName,
@@ -276,7 +277,7 @@ export default function ConsolidatedPage() {
                 variant="outline"
                 isFullWidth
               >
-                Générer une autre facture
+                {MESSAGES.REPORTS.CONSOLIDATED.GENERATE_BUTTON}
               </Button>
             </div>
           </div>
