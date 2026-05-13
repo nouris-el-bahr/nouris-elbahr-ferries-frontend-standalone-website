@@ -15,7 +15,6 @@ import {
 } from "@/store/slices/snapshotsSlice";
 import { addResults } from "@/store/slices/resultsSlice";
 import { runConsolidated } from "@/lib/engine/consolidatedEngine";
-import { CheckCircle2 } from "lucide-react";
 import { triggerDownload } from "@/lib/engine/fileLoaders";
 import {
   PageContainer,
@@ -135,32 +134,16 @@ export default function ConsolidatedPage() {
 
         {/* Step 1: Snapshot */}
         <Card className="mb-6">
-          <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
-            <span className="step-badge">1</span>
-            Snapshot de référence
-          </h2>
-
-          {snaps.snapshotFile ? (
-            <div className="bg-green-50 border border-green-200 rounded p-3 flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 size={18} className="text-green-600" />
-                <span className="text-sm text-green-800">
-                  {snaps.snapshotFile.name}
-                </span>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => dispatch(clearSnapshotFile())}
-              >
-                Remplacer
-              </Button>
-            </div>
-          ) : (
+          <div className="px-6 py-4">
+            <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
+              <span className="step-badge">1</span>
+              Snapshot de référence
+            </h2>
             <Input
               type="file"
               accept=".csv"
               label="Charger le snapshot CSV"
+              helperText={snaps.snapshotFile ? `✓ ${snaps.snapshotFile.name}` : undefined}
               onChange={(e) => {
                 const files = (e.target as HTMLInputElement).files;
                 if (files?.[0]) {
@@ -168,75 +151,81 @@ export default function ConsolidatedPage() {
                 }
               }}
             />
-          )}
+          </div>
         </Card>
 
         {/* Step 2: Invoice File */}
         {snaps.snapshotFile && (
           <Card className="mb-6">
-            <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
-              <span className="step-badge">2</span>
-              Fichier de facture
-            </h2>
-            <Input
-              type="file"
-              accept=".csv,.xlsx,.xls"
-              label="Fichier CSV ou Excel"
-              helperText={invoiceFile ? `✓ ${invoiceFile.name}` : undefined}
-              onChange={(e) => {
-                const files = (e.target as HTMLInputElement).files;
-                setInvoiceFile(files?.[0] || null);
-              }}
-            />
+            <div className="px-6 py-4">
+              <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
+                <span className="step-badge">2</span>
+                Fichier de facture
+              </h2>
+              <Input
+                type="file"
+                accept=".csv,.xlsx,.xls"
+                label="Fichier CSV ou Excel"
+                helperText={invoiceFile ? `✓ ${invoiceFile.name}` : undefined}
+                onChange={(e) => {
+                  const files = (e.target as HTMLInputElement).files;
+                  setInvoiceFile(files?.[0] || null);
+                }}
+              />
+            </div>
           </Card>
         )}
 
         {/* Step 3: Optional Sales File */}
         {invoiceFile && (
           <Card className="mb-6">
-            <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
-              <span className="step-badge">3</span>
-              Facture de ventes (optionnel)
-            </h2>
-            <Input
-              type="file"
-              accept=".xlsx,.xls"
-              label="Fichier Excel SalesInvoice"
-              helperText={salesFile ? `✓ ${salesFile.name}` : undefined}
-              onChange={(e) => {
-                const files = (e.target as HTMLInputElement).files;
-                setSalesFile(files?.[0] || null);
-              }}
-            />
+            <div className="px-6 py-4">
+              <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
+                <span className="step-badge">3</span>
+                Facture de ventes (optionnel)
+              </h2>
+              <Input
+                type="file"
+                accept=".xlsx,.xls"
+                label="Fichier Excel SalesInvoice"
+                helperText={salesFile ? `✓ ${salesFile.name}` : undefined}
+                onChange={(e) => {
+                  const files = (e.target as HTMLInputElement).files;
+                  setSalesFile(files?.[0] || null);
+                }}
+              />
+            </div>
           </Card>
         )}
 
         {/* Step 4: Dates */}
         {invoiceFile && (
           <Card className="mb-6">
-            <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
-              <span className="step-badge">4</span>
-              Période de facturation
-            </h2>
-            <div className="grid grid-cols-3 gap-4">
-              <Input
-                type="date"
-                value={pay.factDate}
-                label="Date de téléchargement"
-                onChange={(e) => dispatch(setFactDate(e.target.value))}
-              />
-              <Input
-                type="date"
-                value={pay.periodStart}
-                label="Début"
-                onChange={(e) => dispatch(setPeriodStart(e.target.value))}
-              />
-              <Input
-                type="date"
-                value={pay.periodEnd}
-                label="Fin"
-                onChange={(e) => dispatch(setPeriodEnd(e.target.value))}
-              />
+            <div className="px-6 py-4">
+              <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
+                <span className="step-badge">4</span>
+                Période de facturation
+              </h2>
+              <div className="grid grid-cols-3 gap-4">
+                <Input
+                  type="date"
+                  value={pay.factDate}
+                  label="Date de téléchargement"
+                  onChange={(e) => dispatch(setFactDate(e.target.value))}
+                />
+                <Input
+                  type="date"
+                  value={pay.periodStart}
+                  label="Début"
+                  onChange={(e) => dispatch(setPeriodStart(e.target.value))}
+                />
+                <Input
+                  type="date"
+                  value={pay.periodEnd}
+                  label="Fin"
+                  onChange={(e) => dispatch(setPeriodEnd(e.target.value))}
+                />
+              </div>
             </div>
           </Card>
         )}
@@ -244,17 +233,19 @@ export default function ConsolidatedPage() {
         {/* Run Button */}
         {invoiceFile && pay.factDate && pay.periodStart && pay.periodEnd && (
           <Card className="mb-6">
-            <Button
-              onClick={handleRun}
-              disabled={running}
-              isLoading={running}
-              isFullWidth
-              variant="primary"
-            >
-              {running
-                ? "Génération en cours..."
-                : "Générer la facture consolidée"}
-            </Button>
+            <div className="px-6 py-4">
+              <Button
+                onClick={handleRun}
+                disabled={running}
+                isLoading={running}
+                isFullWidth
+                variant="primary"
+              >
+                {running
+                  ? "Génération en cours..."
+                  : "Générer la facture consolidée"}
+              </Button>
+            </div>
           </Card>
         )}
 
