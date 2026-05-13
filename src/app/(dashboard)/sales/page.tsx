@@ -13,7 +13,7 @@ import {
   runSalesReport,
 } from "@/store/slices/salesSlice";
 import { addResults } from "@/store/slices/resultsSlice";
-import { PageContainer, PageHeader, Button, Alert, Spinner, Card } from "@/shared";
+import { PageContainer, PageHeader, Button, Alert, Spinner, Card, Select } from "@/shared";
 import {
   SalesReportForm,
   StepIndicator,
@@ -173,13 +173,30 @@ export default function SalesPage() {
           />
         )}
 
-        {/* Step 1: File Selection */}
+        {/* Step 1: File Selection - Format and Folder */}
         <Card className="mb-6">
           <div className="px-6 py-4">
             <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
               <span className="step-badge">1</span>
               {MESSAGES.REPORTS.SALES.SELECT_FILES}
             </h2>
+            <div className="space-y-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {MESSAGES.REPORTS.SALES.FORMAT}
+                </label>
+                <Select
+                  name="format"
+                  value={sales.format}
+                  onChange={(e) => dispatch(setFormat(e.target.value))}
+                  options={[
+                    { value: "Csv", label: "CSV" },
+                    { value: "Xlsx", label: "Excel" },
+                  ]}
+                  disabled={sales.running}
+                />
+              </div>
+            </div>
             <FolderSelector
               label="Dossier de ventes"
               hint="Sélectionnez le dossier contenant vos fichiers CSV ou Excel"
@@ -202,6 +219,7 @@ export default function SalesPage() {
               vatSuffix={sales.vatSuffix}
               mode={sales.mode}
               onlyCheckedIn={sales.onlyCheckedIn}
+              hideFormat={true}
               errors={errors}
               onDownloadDateChange={(date) => dispatch(setDownloadDate(date))}
               onFormatChange={(format) => dispatch(setFormat(format))}

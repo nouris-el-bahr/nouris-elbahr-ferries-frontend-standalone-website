@@ -11,6 +11,7 @@ interface SalesReportFormProps {
   vatSuffix: string;
   mode: string;
   onlyCheckedIn: boolean;
+  hideFormat?: boolean;
   errors?: Record<string, string>;
   onDownloadDateChange: (date: string) => void;
   onFormatChange: (format: string) => void;
@@ -26,6 +27,7 @@ export const SalesReportForm: React.FC<SalesReportFormProps> = ({
   vatSuffix,
   mode,
   onlyCheckedIn,
+  hideFormat = false,
   errors = {},
   onDownloadDateChange,
   onFormatChange,
@@ -42,7 +44,7 @@ export const SalesReportForm: React.FC<SalesReportFormProps> = ({
             {MESSAGES.REPORTS.SALES.PARAMETERS}
           </h2>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className={`grid gap-4 ${hideFormat ? "grid-cols-2" : "grid-cols-2"}`}>
             <FormField
               name="downloadDate"
               label={MESSAGES.REPORTS.SALES.DOWNLOAD_DATE}
@@ -53,17 +55,19 @@ export const SalesReportForm: React.FC<SalesReportFormProps> = ({
               required
             />
 
-            <Select
-              name="format"
-              label={MESSAGES.REPORTS.SALES.FORMAT}
-              value={format}
-              onChange={(e) => onFormatChange(e.target.value)}
-              options={[
-                { value: "Csv", label: "CSV" },
-                { value: "Xlsx", label: "Excel" },
-              ]}
-              error={errors.format}
-            />
+            {!hideFormat && (
+              <Select
+                name="format"
+                label={MESSAGES.REPORTS.SALES.FORMAT}
+                value={format}
+                onChange={(e) => onFormatChange(e.target.value)}
+                options={[
+                  { value: "Csv", label: "CSV" },
+                  { value: "Xlsx", label: "Excel" },
+                ]}
+                error={errors.format}
+              />
+            )}
 
             <FormField
               name="vatSuffix"
