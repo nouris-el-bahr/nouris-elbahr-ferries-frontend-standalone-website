@@ -13,7 +13,7 @@ import {
   runSalesReport,
 } from "@/store/slices/salesSlice";
 import { addResults } from "@/store/slices/resultsSlice";
-import { PageContainer, PageHeader, Button, Alert, Spinner, Card, Select } from "@/shared";
+import { PageContainer, PageHeader, Button, Alert, Spinner, Card } from "@/shared";
 import {
   SalesReportForm,
   StepIndicator,
@@ -180,23 +180,6 @@ export default function SalesPage() {
               <span className="step-badge">1</span>
               {MESSAGES.REPORTS.SALES.SELECT_FILES}
             </h2>
-            <div className="space-y-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {MESSAGES.REPORTS.SALES.FORMAT}
-                </label>
-                <Select
-                  name="format"
-                  value={sales.format}
-                  onChange={(e) => dispatch(setFormat(e.target.value))}
-                  options={[
-                    { value: "Csv", label: "CSV" },
-                    { value: "Xlsx", label: "Excel" },
-                  ]}
-                  disabled={sales.running}
-                />
-              </div>
-            </div>
             <FolderSelector
               label="Dossier de ventes"
               hint="Sélectionnez le dossier contenant vos fichiers CSV ou Excel"
@@ -205,6 +188,12 @@ export default function SalesPage() {
                 setSalesFolderFiles(files);
               }}
               disabled={sales.running}
+              fileType={sales.format}
+              onFileTypeChange={(format) => dispatch(setFormat(format))}
+              fileTypeOptions={[
+                { value: "Csv", label: "CSV" },
+                { value: "Xlsx", label: "Excel" },
+              ]}
             />
           </div>
         </Card>

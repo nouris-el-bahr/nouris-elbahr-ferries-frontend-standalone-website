@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Card, Select } from "@/shared";
+import { Card } from "@/shared";
 import FolderSelector from "@/components/FolderSelector";
 import { MESSAGES } from "@/constants";
 
@@ -38,28 +38,7 @@ export const ReferenceFileSelector: React.FC<ReferenceFolderSelectorProps> = ({
         </div>
       )}
 
-      {/* File Type Selection */}
-      <Card className="mb-6">
-        <div className="px-6 py-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Format
-          </label>
-          <Select
-            name="fileType"
-            value={fileType}
-            onChange={(e) =>
-              onFileTypeChange(e.target.value as "Csv" | "Xlsx")
-            }
-            options={[
-              { value: "Csv", label: "CSV" },
-              { value: "Xlsx", label: "Excel" },
-            ]}
-            disabled={disabled}
-          />
-        </div>
-      </Card>
-
-      {/* Folder Selection */}
+      {/* Folder Selection with File Type */}
       <Card className="mb-6">
         <div className="px-6 py-4">
           <FolderSelector
@@ -67,6 +46,12 @@ export const ReferenceFileSelector: React.FC<ReferenceFolderSelectorProps> = ({
             hint={MESSAGES.REPORTS.PAYMENT.REFERENCE_FILES_HINT}
             onFolderSelect={onFolderSelect}
             disabled={disabled}
+            fileType={fileType}
+            onFileTypeChange={onFileTypeChange}
+            fileTypeOptions={[
+              { value: "Csv", label: "CSV" },
+              { value: "Xlsx", label: "Excel" },
+            ]}
           />
         </div>
       </Card>

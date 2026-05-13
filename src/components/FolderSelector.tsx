@@ -2,13 +2,22 @@
 
 import { useRef, useState } from "react";
 import { FolderOpen, X } from "lucide-react";
-import { Button } from "@/shared";
+import { Button, Select } from "@/shared";
+
+interface FileTypeOption {
+  value: string;
+  label: string;
+}
 
 interface FolderSelectorProps {
   label: string;
   hint?: string;
   onFolderSelect: (path: string, files?: File[]) => void;
   disabled?: boolean;
+  fileType?: string;
+  onFileTypeChange?: (type: string) => void;
+  fileTypeOptions?: FileTypeOption[];
+  fileTypeLabel?: string;
 }
 
 export default function FolderSelector({
@@ -16,6 +25,10 @@ export default function FolderSelector({
   hint,
   onFolderSelect,
   disabled = false,
+  fileType,
+  onFileTypeChange,
+  fileTypeOptions,
+  fileTypeLabel,
 }: FolderSelectorProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedPath, setSelectedPath] = useState("");
@@ -55,34 +68,47 @@ export default function FolderSelector({
   return (
     <div>
       <label className="label">{label}</label>
-      <div className="flex gap-2">
-        <div className="flex-1 flex items-center bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5">
-          {selectedPath ? (
-            <div className="flex items-center justify-between flex-1 min-w-0">
-              <p className="text-sm font-mono text-gray-700 truncate">{selectedPath}</p>
-              <button
-                type="button"
-                onClick={handleClear}
-                className="text-gray-400 hover:text-gray-600 ml-2 shrink-0"
-                title="Effacer"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          ) : (
-            <p className="text-sm text-gray-400">Aucun dossier sélectionné</p>
-          )}
+      <div className="flex gap-2 items-end">
+        {fileTypeOptions && fileType !== undefined && onFileTypeChange && (
+          <div className="w-32">
+            <Select
+              name="fileType"
+              value={fileType}
+              onChange={(e) => onFileTypeChange(e.target.value)}
+              options={fileTypeOptions}
+              disabled={disabled}
+            />
+          </div>
+        )}
+        <div className="flex gap-2 flex-1">
+          <div className="flex-1 flex items-center bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5">
+            {selectedPath ? (
+              <div className="flex items-center justify-between flex-1 min-w-0">
+                <p className="text-sm font-mono text-gray-700 truncate">{selectedPath}</p>
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="text-gray-400 hover:text-gray-600 ml-2 shrink-0"
+                  title="Effacer"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400">Aucun dossier sélectionné</p>
+            )}
+          </div>
+          <Button
+            onClick={handleSelectFolder}
+            disabled={disabled}
+            variant="secondary"
+            size="sm"
+            className="shrink-0"
+            leftIcon={<FolderOpen size={15} />}
+          >
+            Sélectionner
+          </Button>
         </div>
-        <Button
-          onClick={handleSelectFolder}
-          disabled={disabled}
-          variant="secondary"
-          size="sm"
-          className="shrink-0"
-          leftIcon={<FolderOpen size={15} />}
-        >
-          Sélectionner
-        </Button>
       </div>
       {hint && <p className="text-xs text-gray-400 mt-1">{hint}</p>}
 
