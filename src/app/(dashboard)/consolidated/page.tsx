@@ -118,8 +118,8 @@ export default function ConsolidatedPage() {
         description="Générez une facture consolidée paiement + ventes"
       />
 
-      <PageContainer maxWidth="lg">
-        <StepIndicator steps={steps} currentStep={currentStep} />
+      <PageContainer>
+        <StepIndicator steps={steps} currentStep={currentStep} className="mb-6" />
 
         {error && (
           <Alert

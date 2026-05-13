@@ -148,6 +148,7 @@ export default function PaymentPage() {
         <StepIndicator
           steps={steps}
           currentStep={refFolderPath === "" ? 1 : invoiceFile === null ? 2 : 3}
+          className="mb-6"
         />
 
         {pay.error && (

@@ -159,6 +159,7 @@ export default function SalesPage() {
                   ? 3
                   : 2
           }
+          className="mb-6"
         />
 
         {sales.error && (
