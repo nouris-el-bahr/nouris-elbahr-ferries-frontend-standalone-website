@@ -10,7 +10,7 @@ import {
   selectTotalResultsCount,
 } from "@/store/selectors/resultsSelector";
 import { ArrowRight, BarChart2, CreditCard, FileText } from "lucide-react";
-import { SkeletonCard, Badge } from "@/shared";
+import { SkeletonCard, Badge, PageHeader, PageContainer } from "@/shared";
 import { Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell } from "@/shared";
 
 function formatDate(ts: number) {
@@ -100,11 +100,12 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="max-w-5xl">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-nouris-navy">Tableau de bord</h1>
-        <p className="text-gray-500 text-sm mt-1">Mode hors ligne - Gestion des rapports Nouris El Bahr</p>
-      </div>
+    <>
+      <PageHeader
+        title="Tableau de bord"
+        description="Mode hors ligne - Gestion des rapports Nouris El Bahr"
+      />
+      <PageContainer maxWidth="lg">
 
       <div className="grid grid-cols-3 gap-4 mb-8">
         {statCards.map((card) => (
@@ -204,6 +205,7 @@ export default function HomePage() {
           </Table>
         )}
       </div>
-    </div>
+      </PageContainer>
+    </>
   );
 }

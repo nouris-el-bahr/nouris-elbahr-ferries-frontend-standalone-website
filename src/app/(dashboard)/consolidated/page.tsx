@@ -68,9 +68,6 @@ export default function ConsolidatedPage() {
         salesInvoiceFile: salesFile || undefined,
       });
 
-      triggerDownload(res.consolidatedBlob, res.consolidatedName);
-      triggerDownload(res.updatedRefBlob, res.updatedRefName);
-
       dispatch(
         addResults([
           {

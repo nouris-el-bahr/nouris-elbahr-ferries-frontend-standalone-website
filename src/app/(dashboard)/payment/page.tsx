@@ -102,11 +102,6 @@ export default function PaymentPage() {
 
       setResult(res);
 
-      // Download files
-      triggerDownload(res.paymentGroupedBlob, res.paymentGroupedName);
-      triggerDownload(res.factureBlob, res.factureName);
-      triggerDownload(res.updatedRefBlob, res.updatedRefName);
-
       // Track in results
       const now = Date.now();
       dispatch(

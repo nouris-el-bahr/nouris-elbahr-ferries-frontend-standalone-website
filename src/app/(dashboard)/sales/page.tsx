@@ -103,21 +103,6 @@ export default function SalesPage() {
 
       setResult(res);
 
-      // Download main files
-      triggerDownload(res.salesShortBlob, res.salesShortName);
-      triggerDownload(res.salesInvoiceBlob, res.salesInvoiceName);
-      triggerDownload(res.salesInvoiceControlBlob, res.salesInvoiceControlName);
-
-      if (res.salesControlNourisBlob) {
-        triggerDownload(res.salesControlNourisBlob, res.salesControlNourisName);
-      }
-      if (res.salesControlGsaBlob) {
-        triggerDownload(res.salesControlGsaBlob, res.salesControlGsaName);
-      }
-      if (res.salesDetailedBlob) {
-        triggerDownload(res.salesDetailedBlob, res.salesDetailedName);
-      }
-
       // Track in results
       const now = Date.now();
       dispatch(
