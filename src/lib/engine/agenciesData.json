@@ -1,0 +1,1536 @@
+{
+  "MOH200": {
+    "name": "EL MOUHSSINOUNE TOURS",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MANOLIA": {
+    "name": "MANOLIA TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "RAFA": {
+    "name": "RAFA VOYAGE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "BADJI": {
+    "name": "BADJI TOURISME ET VOYAGE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "182": {
+    "name": "ZOGHBI VOYAGE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "BBATA": {
+    "name": "TOURING B.B.ARRERIDJ",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "NEBO": {
+    "name": "NOURIS EL BAHR ORAN",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ABCH186": {
+    "name": "ABSHER AGENCY",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MCR188": {
+    "name": "MICIRDA TOURS",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "RELAISV": {
+    "name": "LE RELAIS VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "LOURARI": {
+    "name": "LOURARI VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "SAMA187": {
+    "name": "SAMA MANAR TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ONATRLZ": {
+    "name": "ONAT RELIZANE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "TRAVELM": {
+    "name": "TRAVEL MARKET TOURISME",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ELIANEM": {
+    "name": "ELIANE MENANA VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "KADERT": {
+    "name": "KADER TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "KARTINA": {
+    "name": "KARTINA TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "JDIOUIA": {
+    "name": "JDIOUIA VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "GOURAYA": {
+    "name": "GOURAYA TOUR",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "AYLOUL": {
+    "name": "AYLOUL VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "181": {
+    "name": "EL MERRINIA LILKHADAMAT SIYAHIA",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "BOUFFEE": {
+    "name": "BOUFFEE D'AIR VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MANAKIB": {
+    "name": "MANAKIB TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "GOODM": {
+    "name": "GOOD MORNING TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MISE195": {
+    "name": "MISE A JOUR VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "LEJD190": {
+    "name": "LEJDAR REGHAIA TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "PINTON": {
+    "name": "PINTON TOUR",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "NEBM": {
+    "name": "NOURIS EL BAHR MOSTAGANEM",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MYLINET": {
+    "name": "MYLINE TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "IDHOURAR": {
+    "name": "IDHOURAR TOURS",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "NEBB": {
+    "name": "NOURIS EL BAHR LES VERGERS (Comptoir01)",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "NEBB1": {
+    "name": "NOURIS EL BAHR LES VERGERS (Comptoir02)",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "NEBB2": {
+    "name": "NOURIS EL BAHR LES VERGERS (Comptoir03)",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "NEBB3": {
+    "name": "NOURIS EL BAHR LES VERGERS (Comptoir04)",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "NEBB4": {
+    "name": "NOURIS EL BAHR LES VERGERS (comptoir05)",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZTCHTOLGA2": {
+    "name": "ZAATCHA TOLGA 2",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "WAHIBAT": {
+    "name": "WAHIBA TOURS",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "RAHLATE": {
+    "name": "ALAME EL RAHLATE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "THEARKAVE": {
+    "name": "THEARKAVE TOURS",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "CSTTA": {
+    "name": "TOURING CONSTANTINE AOUATI",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "RYTELT": {
+    "name": "RYTEL TRAVELS",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ORANSOM": {
+    "name": "TOURING ORAN Summam",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MELGO": {
+    "name": "MELGO TRAVEL AGENCY",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "PLANET": {
+    "name": "PLANET TRAVEL FOR YOU",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MOHMCIRDA": {
+    "name": "MOHAMMED MCIRDI",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAHIA": {
+    "name": "ZAHIA VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "DOUA": {
+    "name": "DOUA EL NADJEM TRAVEL - MAHAMEDI Adil",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "SPFLOTTES": {
+    "name": "SARL SAAPY FLOTTES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "FORMUL1": {
+    "name": "FORMUL 1 VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ELBARAKA": {
+    "name": "EL BARAKA VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "OUARDATE": {
+    "name": "OUARDATE AURES TOURS",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "DELYWORLD": {
+    "name": "DELY WORLD TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "OUASSIM": {
+    "name": "OUASSIM VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "KHALEDAH": {
+    "name": "KHALEDAH",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ELSAJAYA": {
+    "name": "EL SAJAYA",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "BENAKLIV": {
+    "name": "BENAKLI VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "BONNEADD": {
+    "name": "LA BONNE ADRESSE TOURS",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "RANADAT": {
+    "name": "RANADA TRAVEL SERVICE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "AZHARI": {
+    "name": "AZHARI VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ALUMEXA": {
+    "name": "ALUMEXA VOYAGE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "DRAMAST": {
+    "name": "DRAMAS TOURS",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MSILATA": {
+    "name": "TOURING M’SILA",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ELAFIA": {
+    "name": "EL AFIA VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "SKIKDATA": {
+    "name": "TOURING SKIKDA",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "OUEDSLY": {
+    "name": "OUEDSLY TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "BOULERBAH": {
+    "name": "BOULERBAH TOURISME ET VOYAGE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "AZNAG": {
+    "name": "AZNAG TOURS",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "CHLEFTA": {
+    "name": "TOURING CHLEF",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MZ185": {
+    "name": "MEZINE TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "KAABECHET": {
+    "name": "KAABECHE TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "SABNOUR": {
+    "name": "SAB NOUR VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "NOUHA": {
+    "name": "NOUHA TOUR",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MASSARA": {
+    "name": "MASSAR ALGIERS AGENCY",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MDMF": {
+    "name": "MOUAKI DADI MOHAMED FAICAL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ELSALILE": {
+    "name": "EL SALILE VOYAGE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "OVERLAND": {
+    "name": "OVERLAND CLICKS TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ETTAWHID": {
+    "name": "ETTAWHID VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MOUZAIATA": {
+    "name": "TOURING MOUZAIA",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MADIHA": {
+    "name": "MADIHA VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MERCUREV": {
+    "name": "MERCURE VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "TURKEYV": {
+    "name": "TURKEY VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MARHABA": {
+    "name": "MARHABA VOYAGE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "AOULMANE": {
+    "name": "TOURING A.OULMANE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ABASSI": {
+    "name": "ABASSI VOYAGE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "SMILET": {
+    "name": "SMILE TOURISME ET VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MECHOUARV": {
+    "name": "MECHOUAR VOYAGE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MASCARATA": {
+    "name": "TOURING MASCARA",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "TAKMEEN": {
+    "name": "WAKALAT TAMKEEN LILSIYAHA WA ASFAR",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "UZMAN": {
+    "name": "UZMAN VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "BEST-TRIP": {
+    "name": "BEST TRIP TRAVEL JM",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "JIJELTA": {
+    "name": "TOURING JIJEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "DJELFATA": {
+    "name": "TOURING DJELFA",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ROUIBATA": {
+    "name": "TOURING ROUIBA",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ONATORN": {
+    "name": "ONAT ORAN",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "TIZITA": {
+    "name": "TOURING TIZI OUZOU",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "TINGARTIA": {
+    "name": "TINGARTIA TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ROSTOM": {
+    "name": "ROSTOM VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "HELPDESK": {
+    "name": "HELD DESK",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ANNABA": {
+    "name": "TOURING ANNABA",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "NOVELA": {
+    "name": "NOVELA TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "CHEVALB": {
+    "name": "CHEVAL BLANC VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZEMZEMALG": {
+    "name": "ZEMZEM ALGER",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "CORRECT": {
+    "name": "CORRECT TOURISME ET VOYAGE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MOURAM": {
+    "name": "MOUAKI BENANI MOURAD",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "WRENCHT": {
+    "name": "WRENCH TOURISME ET VOYAGE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "DOUNIAT": {
+    "name": "DOUNIA TRAVEL SERVICE AGENCY",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZEMZEMORN": {
+    "name": "ZEMZEM ORAN",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "INTERRIVES": {
+    "name": "INTERRIVES VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "HOMELAND": {
+    "name": "HOMELAND AGENCY",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZYOUCEF": {
+    "name": "TOURING Z.YOUCEF",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "BAYRAQV": {
+    "name": "AL BAYRAQ VOYAGE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ADDMONDE": {
+    "name": "ADRESSES DU MONDE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ELDJFINE": {
+    "name": "SARL EL DJFINE TOUR",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "NUAGE": {
+    "name": "NUAGE TOURS",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MEDEATA": {
+    "name": "TOURING MEDEA",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "OUKHOUAB": {
+    "name": "EL OUKHOUA BELMOKHTAR",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "PRIVILEGE2": {
+    "name": "PRIVILEGE TOUR",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "PEGASUS": {
+    "name": "PEGASUS TOURS",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ALQASWAA": {
+    "name": "AL QASWAA ALGERIE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "BEJAIATA": {
+    "name": "TOURING BEJAIA",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ALTAVAT": {
+    "name": "ALTAVA TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ANAPIA": {
+    "name": "ANAPIA TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "CHERNINE": {
+    "name": "CHERNINE TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "HMMA189": {
+    "name": "Hamama voyages",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "HAMADI": {
+    "name": "HAMADI TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "BIG-PLS": {
+    "name": "BIG PLEASURE TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "CHARME": {
+    "name": "CHARME VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "SIDLINE": {
+    "name": "SIDLINE TOURS",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "TAHARB": {
+    "name": "TAHAR B",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "CONFIANZA": {
+    "name": "CONFIANZA  TOUR",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ATEMOUCHNT": {
+    "name": "TOURING A.TEMOUCHENT",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "KALILALAA": {
+    "name": "KHALIL ALAA TOUR",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ABDELLAH02": {
+    "name": "ABDELLAH02",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "SETIF2TA": {
+    "name": "TOURING SETIF 2",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "SPATOURING": {
+    "name": "SPA TOURING BISKRA",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "VERGERSTA": {
+    "name": "TOURING VERGERS",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZATCHAPORT": {
+    "name": "ZATCHAPORT",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "FOUNDOQ": {
+    "name": "Foundoq",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ABDELLAHM": {
+    "name": "ABDELLAHM",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "NUMIDIA": {
+    "name": "SARL NUMIDIA TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ORANBDF": {
+    "name": "TOURING ORAN Boudiaf",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "PRIVILEGE": {
+    "name": "PRIVILEGE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "BOOKINGZA": {
+    "name": "bookingza",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "SOUHA": {
+    "name": "SOUHA TOURS",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "PASSERELLE": {
+    "name": "PASSERELLE - MOULAI Youcef",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "NESSMAV": {
+    "name": "NESSMA VOYAGES ET TOURISME",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "TACTILEA": {
+    "name": "TACTILE AGENCY",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "NIRVANAV": {
+    "name": "NIRVANA VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "SAHOUA": {
+    "name": "SAHOUA VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "DOUNIAES": {
+    "name": "DOUNIA ES-SAFAR BLIDA",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "TRAVELC": {
+    "name": "TRAVEL CONSULTING AB",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ABDEDDAIM": {
+    "name": "ABDEDDAIM VOYAGE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "AWAMT": {
+    "name": "AWAM TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "BOUCHERITT": {
+    "name": "BOUCHERIT TOURISME",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ELJOURIT": {
+    "name": "ELJOURI TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MAZOUNAT": {
+    "name": "MAZOUNA TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MELGOBLD": {
+    "name": "MELGO TRAVEL AGENCY BLIDA",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHA02": {
+    "name": "ZAATCHA02 Setif,Algerie",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHAADR": {
+    "name": "ZAATCHA ADRAR",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHAK06": {
+    "name": "MERBAH FERIEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHAK10": {
+    "name": "BEY AMINA HANNANE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZKDIGITAL": {
+    "name": "ZAATCHA DIGITAL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "180": {
+    "name": "Zaatcha Voyages Kouba",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHAMOS": {
+    "name": "ZAATCHA VOYAGES MOSTAGHANEM",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHAK03": {
+    "name": "BOUHOUDA Sabrine",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHAK02": {
+    "name": "BELASLA AMEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHATPZ": {
+    "name": "ZAATCHA TIPAZA",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHAK05": {
+    "name": "BOUAZIZ Malia",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHAK07": {
+    "name": "YAMOUNE Salim",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHASBA": {
+    "name": "ZAATCHA VOYAGES SIDI BELABBES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHARLZ": {
+    "name": "ZAATCHA VOYAGE RELIZANE",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHAOD": {
+    "name": "ZAATCHA OULED DJELLAL VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "RAMBIA": {
+    "name": "RAMBI Amel",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHATLG": {
+    "name": "ZAATCHA VOYAGE TOLGA",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHABSK": {
+    "name": "ZAATCHA BISKRA",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHAK04": {
+    "name": "KETEB MEBAREK MAHDI",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHAK01": {
+    "name": "Boutoumou redouane",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHABB": {
+    "name": "ZAATCHA BADREDINE BOURSAS",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "ZAATCHA01": {
+    "name": "ZAATCHA01",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "MELYNZOV": {
+    "name": "MELYNZO VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "TASTICT": {
+    "name": "TASTIC TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "NOMELATA": {
+    "name": "NOMELATA",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "VAIV": {
+    "name": "VAI VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "BILALT": {
+    "name": "BILAL TOURISME ET VOYAGES",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "AQUATERRA": {
+    "name": "AQUA TERRA TRAVEL",
+    "gsa": "Zaatcha",
+    "currency": "DZD",
+    "commission": 0.1,
+    "active": true
+  },
+  "AS-SAHEL": {
+    "name": "ASFAR SAHEL, S.L.",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "ZAFIRO-TR": {
+    "name": "ZAFIRO TOURS",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "AFERRY": {
+    "name": "AFERRY LTD",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "SNCM-IT": {
+    "name": "SNCM ITALIA SRL",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "FALHI-FR": {
+    "name": "FALHI VOYAGES",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "MANAVA-TRA": {
+    "name": "MANAVA TRAVEL",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "LIESSE-NCE": {
+    "name": "LIESSE VOYAGES NICE",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "EL-DJAZAIR": {
+    "name": "EL-DJAZAIR",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "SALAM-TR": {
+    "name": "SALAM TOURS",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "IZYSAFAR": {
+    "name": "IZYSAFAR",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "SNCM-FV": {
+    "name": "SNCM ITALIA FV",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "NVM-AG": {
+    "name": "NAVIMED",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "DJEMILA-V": {
+    "name": "DJEMILA VOYAGES",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "COLOMBES-V": {
+    "name": "COLOMBES VOYAGES",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "ATLAS-VOY": {
+    "name": "ATLAS VOYAGES",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "MED-VOY": {
+    "name": "MEDITERRANEE VOYAGES",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "LIESSE-MRS": {
+    "name": "LIESSE VOYAGES MARSEILLE",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "HELOISE": {
+    "name": "HELOISE VOYAGE",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "ATLAS-TR": {
+    "name": "ATLAS TOURS",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "LIESSE-GNB": {
+    "name": "LIESSE VOYAGES GRENOBLE",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "NAJAH-TR": {
+    "name": "NAJAH TRAVEL",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "TRPARTNAIR": {
+    "name": "TRAVEL PARTNAIR",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "ASFAR-CITY": {
+    "name": "ASFAR CITY",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "FERRY-HOP": {
+    "name": "FERRY HOPPER S.A",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+
+  "ATLAS-TR5": {
+    "name": "ATLAS TOURS",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "ATLAS-TR1": {
+    "name": "ATLAS TOURS",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "ATHIS-N7": {
+    "name": "ATHIS N7 SERVICES",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "FENSCH-VOY": {
+    "name": "FENSCH VOYAGES",
+    "gsa": "NVM",
+    "currency": "EUR",
+    "commission": 0.13,
+    "active": true
+  },
+  "OPS": {
+    "name": "OCEAN PORTS & SHIPPING",
+    "gsa": "OPS",
+    "currency": "EUR",
+    "commission": 0.1,
+    "active": true
+  },
+  "NOURIS": {
+    "name": "NOURIS ELBAHR MM",
+    "gsa": "Siege",
+    "currency": "DZD",
+    "commission": 0.0,
+    "active": true
+  },
+  "NEBDG": {
+    "name": "Nouris Elbahr DG",
+    "gsa": "Siege",
+    "currency": "DZD",
+    "commission": 0.0,
+    "active": true
+  },
+  "TESTWEB": {
+    "name": "TEST WEB",
+    "gsa": "Siege",
+    "currency": "DZD",
+    "commission": 0,
+    "active": true
+  },
+  "TEST5": {
+    "name": "TEST",
+    "gsa": "Siege",
+    "currency": "DZD",
+    "commission": 0,
+    "active": true
+  },
+  "WEBAGTEN": {
+    "name": "Web agent English",
+    "gsa": "Website",
+    "currency": "EUR",
+    "commission": 0.0,
+    "active": true
+  }
+}
