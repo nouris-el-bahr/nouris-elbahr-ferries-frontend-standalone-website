@@ -1,3 +1,5 @@
+'use client';
+
 import { Row } from './common';
 
 interface InvoiceDetails {
@@ -63,99 +65,11 @@ function extractRowValues(row: Row): MappedValues {
   };
 }
 
-function generateHtmlContent(options: PDFGeneratorOptions, displayHeaders: string[], displayData: (string | number)[][], totalsRow: (string | number)[]): string {
-  const headerCells = displayHeaders.map(h => `<th style="border: 1px solid #000; padding: 4px; background-color: #ccc; font-weight: bold; font-size: 8px;">${h}</th>`).join('');
-
-  const dataRows = displayData.map(row => {
-    const cells = row.map(cell => `<td style="border: 1px solid #000; padding: 3px; text-align: center; font-size: 7px;">${cell}</td>`).join('');
-    return `<tr>${cells}</tr>`;
-  }).join('');
-
-  const totalsRowHtml = `<tr style="background-color: #ccc; font-weight: bold;">
-    ${totalsRow.map(cell => `<td style="border: 1px solid #000; padding: 3px; text-align: center; font-size: 7px;">${cell}</td>`).join('')}
-  </tr>`;
-
-  return `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <style>
-    body {
-      font-family: Helvetica, Arial, sans-serif;
-      margin: 10mm;
-      padding: 0;
-    }
-    h1 {
-      font-size: 14px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      color: #333;
-    }
-    .invoice-details {
-      font-size: 10px;
-      margin-bottom: 15px;
-      color: #333;
-    }
-    .invoice-details p {
-      margin: 3px 0;
-    }
-    .billed-to {
-      font-size: 9px;
-      margin-bottom: 15px;
-      color: #333;
-    }
-    .billed-to h2 {
-      font-size: 9px;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    .billed-to p {
-      margin: 2px 0;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    @media print {
-      body { margin: 0; }
-    }
-  </style>
-</head>
-<body>
-  <h1>Agent Invoice</h1>
-
-  <div class="invoice-details">
-    <p><strong>Invoice No:</strong> ${options.invoiceDetails.invoiceNumber}</p>
-    <p><strong>Invoice Date:</strong> ${options.invoiceDetails.invoiceDate}</p>
-    <p><strong>Due Date:</strong> ${options.invoiceDetails.dueDate}</p>
-    <p><strong>Currency:</strong> ${options.invoiceDetails.currency}</p>
-  </div>
-
-  <div class="billed-to">
-    <h2>Billed To:</h2>
-    <p><strong>Agent Code:</strong> ${options.companyInfo.agentCode}</p>
-    <p><strong>Agent Name:</strong> ${options.companyInfo.name}</p>
-    <p><strong>GSA:</strong> ${options.companyInfo.gsa}</p>
-  </div>
-
-  <table>
-    <thead>
-      <tr>${headerCells}</tr>
-    </thead>
-    <tbody>
-      ${dataRows}
-      ${totalsRowHtml}
-    </tbody>
-  </table>
-</body>
-</html>
-  `;
-}
-
 export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<Blob> {
   try {
+    const { jsPDF } = await import('jspdf');
+    const { default: html2canvas } = await import('html2canvas');
+
     const headers = [
       'Code Rés.', 'Date Créa.', 'PAX HT', 'VEH HT', 'Cabin',
       'Lit', 'Fauteuil', 'Animaux', 'Autres', 'Carb.Veh', 'Carb.Other',
@@ -256,10 +170,92 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
       formatNumber(totals['Commission']),
     ];
 
-    const htmlContent = generateHtmlContent(options, displayHeaders, displayData, totalsRow);
-    return new Blob([htmlContent], { type: 'text/html' });
+    const headerCells = displayHeaders.map(h => `<th style="border: 1px solid #000; padding: 4px; background-color: #ccc; font-weight: bold; font-size: 8px; text-align: center;">${h}</th>`).join('');
+
+    const dataRows = displayData.map(row => {
+      const cells = row.map(cell => `<td style="border: 1px solid #000; padding: 3px; text-align: center; font-size: 7px;">${cell}</td>`).join('');
+      return `<tr>${cells}</tr>`;
+    }).join('');
+
+    const totalsRowHtml = `<tr style="background-color: #ccc; font-weight: bold;">
+      ${totalsRow.map(cell => `<td style="border: 1px solid #000; padding: 3px; text-align: center; font-size: 7px;">${cell}</td>`).join('')}
+    </tr>`;
+
+    const htmlContent = `
+      <div style="font-family: Helvetica, Arial, sans-serif; margin: 20px; padding: 0;">
+        <h1 style="font-size: 14px; font-weight: bold; margin-bottom: 10px;">Agent Invoice</h1>
+
+        <div style="font-size: 10px; margin-bottom: 15px;">
+          <p style="margin: 3px 0;"><strong>Invoice No:</strong> ${options.invoiceDetails.invoiceNumber}</p>
+          <p style="margin: 3px 0;"><strong>Invoice Date:</strong> ${options.invoiceDetails.invoiceDate}</p>
+          <p style="margin: 3px 0;"><strong>Due Date:</strong> ${options.invoiceDetails.dueDate}</p>
+          <p style="margin: 3px 0;"><strong>Currency:</strong> ${options.invoiceDetails.currency}</p>
+        </div>
+
+        <div style="font-size: 9px; margin-bottom: 15px;">
+          <h2 style="font-size: 9px; font-weight: bold; margin-bottom: 5px;">Billed To:</h2>
+          <p style="margin: 2px 0;"><strong>Agent Code:</strong> ${options.companyInfo.agentCode}</p>
+          <p style="margin: 2px 0;"><strong>Agent Name:</strong> ${options.companyInfo.name}</p>
+          <p style="margin: 2px 0;"><strong>GSA:</strong> ${options.companyInfo.gsa}</p>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+          <thead>
+            <tr>${headerCells}</tr>
+          </thead>
+          <tbody>
+            ${dataRows}
+            ${totalsRowHtml}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    const element = document.createElement('div');
+    element.innerHTML = htmlContent;
+    element.style.position = 'absolute';
+    element.style.left = '-9999px';
+    element.style.width = '1100px';
+    document.body.appendChild(element);
+
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+    });
+
+    document.body.removeChild(element);
+
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({
+      orientation: 'l',
+      unit: 'mm',
+      format: 'letter',
+    });
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = pdfWidth - 20;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 10;
+
+    pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+    heightLeft -= pdfHeight - 20;
+
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight - 20;
+    }
+
+    const pdfBlob = pdf.output('blob') as Blob;
+    return pdfBlob;
   } catch (error) {
-    console.error('Error generating invoice HTML:', error);
+    console.error('Error generating invoice PDF:', error);
     throw error;
   }
 }
