@@ -1,12 +1,6 @@
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
-import { Row } from './common';
+'use client';
 
-declare module 'jspdf' {
-  interface jsPDF {
-    autoTable: any;
-  }
-}
+import { Row } from './common';
 
 interface InvoiceDetails {
   invoiceNumber: string;
@@ -71,7 +65,12 @@ function extractRowValues(row: Row): MappedValues {
   };
 }
 
-export function generateInvoicePDF(options: PDFGeneratorOptions): Blob {
+export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<Blob> {
+  const jsPDFModule = await import('jspdf');
+  const { jsPDF } = jsPDFModule;
+
+  await import('jspdf-autotable');
+
   const headers = [
     'Code Rés.', 'Date Créa.', 'PAX HT', 'VEH HT', 'Cabin',
     'Lit', 'Fauteuil', 'Animaux', 'Autres', 'Carb.Veh', 'Carb.Other',
@@ -176,7 +175,6 @@ export function generateInvoicePDF(options: PDFGeneratorOptions): Blob {
     orientation: 'l',
     unit: 'mm',
     format: 'letter',
-    compress: true,
   });
 
   let yPosition = 20;
@@ -211,48 +209,36 @@ export function generateInvoicePDF(options: PDFGeneratorOptions): Blob {
   pdf.text(`GSA: ${options.companyInfo.gsa}`, 20, yPosition);
   yPosition += 8;
 
-  pdf.autoTable({
+  const anyPdf = pdf as any;
+  anyPdf.autoTable({
     head: [displayHeaders],
     body: displayData,
     foot: [totalsRow],
     startY: yPosition,
-    margin: { top: 20, right: 15, bottom: 15, left: 15 },
+    margin: 15,
     styles: {
       fontSize: 7,
-      cellPadding: 2.5,
+      cellPadding: 3,
       overflow: 'linebreak',
       halign: 'center',
       valign: 'middle',
-      lineColor: [0, 0, 0],
-      lineWidth: 0.3,
     },
     headStyles: {
       fillColor: [200, 200, 200],
       textColor: [0, 0, 0],
       fontStyle: 'bold',
-      halign: 'center',
-      lineWidth: 0.3,
     },
     footStyles: {
       fillColor: [200, 200, 200],
       textColor: [0, 0, 0],
       fontStyle: 'bold',
-      halign: 'center',
-      lineWidth: 0.3,
-    },
-    alternateRowStyles: {
-      fillColor: [255, 255, 255],
     },
     bodyStyles: {
-      lineWidth: 0.3,
-      lineColor: [0, 0, 0],
+      halign: 'center',
+      valign: 'middle',
     },
-    columnStyles: {},
-    didDrawPage: () => {
-      pdf.setTextColor(40);
-    },
-    willDrawPage: () => {
-      // Empty
+    alternateRowStyles: {
+      fillColor: [245, 245, 245],
     },
   });
 
