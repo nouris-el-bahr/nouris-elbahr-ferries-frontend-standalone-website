@@ -63,10 +63,73 @@ function extractRowValues(row: Row): MappedValues {
   };
 }
 
+function drawTable(
+  pdf: any,
+  headers: string[],
+  data: (string | number)[][],
+  totalsRow: (string | number)[],
+  startY: number
+) {
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 10;
+  const cellHeight = 4;
+  const cellWidth = (pageWidth - 2 * margin) / headers.length;
+
+  let y = startY;
+  const maxY = pageHeight - margin;
+
+  // Draw header row
+  pdf.setFontSize(7);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFillColor(204, 204, 204);
+
+  for (let i = 0; i < headers.length; i++) {
+    const x = margin + i * cellWidth;
+    pdf.rect(x, y, cellWidth, cellHeight, 'FD');
+    pdf.text(headers[i], x + 1, y + 3, { maxWidth: cellWidth - 2, align: 'center' });
+  }
+  y += cellHeight;
+
+  // Draw data rows
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFillColor(255, 255, 255);
+
+  for (const row of data) {
+    if (y + cellHeight > maxY) {
+      pdf.addPage();
+      y = margin;
+    }
+
+    for (let i = 0; i < row.length; i++) {
+      const x = margin + i * cellWidth;
+      pdf.rect(x, y, cellWidth, cellHeight, 'S');
+      pdf.text(String(row[i]), x + 1, y + 3, { maxWidth: cellWidth - 2, align: 'center' });
+    }
+    y += cellHeight;
+  }
+
+  // Draw totals row
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFillColor(204, 204, 204);
+
+  if (y + cellHeight > maxY) {
+    pdf.addPage();
+    y = margin;
+  }
+
+  for (let i = 0; i < totalsRow.length; i++) {
+    const x = margin + i * cellWidth;
+    pdf.rect(x, y, cellWidth, cellHeight, 'FD');
+    pdf.text(String(totalsRow[i]), x + 1, y + 3, { maxWidth: cellWidth - 2, align: 'center' });
+  }
+
+  return y + cellHeight;
+}
+
 export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<Blob> {
   try {
     const { jsPDF } = await import('jspdf');
-    await import('jspdf-autotable');
 
     const headers = [
       'Code Rés.', 'Date Créa.', 'PAX HT', 'VEH HT', 'Cabin',
@@ -206,38 +269,7 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
     pdf.text(`GSA: ${options.companyInfo.gsa}`, 15, yPosition);
     yPosition += 8;
 
-    (pdf as any).autoTable({
-      head: [displayHeaders],
-      body: displayData,
-      foot: [totalsRow],
-      startY: yPosition,
-      margin: 15,
-      styles: {
-        fontSize: 7,
-        cellPadding: 2,
-        halign: 'center',
-        valign: 'middle',
-      },
-      headStyles: {
-        fillColor: [204, 204, 204],
-        textColor: [0, 0, 0],
-        fontStyle: 'bold',
-        halign: 'center',
-      },
-      footStyles: {
-        fillColor: [204, 204, 204],
-        textColor: [0, 0, 0],
-        fontStyle: 'bold',
-        halign: 'center',
-      },
-      columnStyles: {
-        0: { cellWidth: 30 },
-        1: { cellWidth: 30 },
-      },
-      didDrawPage: () => {
-        // Empty - just to use the autoTable plugin
-      },
-    });
+    drawTable(pdf, displayHeaders, displayData, totalsRow, yPosition);
 
     const pdfBlob = pdf.output('blob') as Blob;
     return pdfBlob;
