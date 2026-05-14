@@ -80,10 +80,35 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
   const pageHeight = pdf.internal.pageSize.getHeight();
   const margin = 12;
 
-  // Draw top right decorative bands
-  const bandWidth = 35;
+  // Load and add logo (left corner) - preserve aspect ratio
+  let logoWidth = 35;
+  let logoHeight = 35;
+  try {
+    const logoResponse = await fetch('/logo_zaatcha.png');
+    const logoBlob = await logoResponse.blob();
+    const logoUrl = URL.createObjectURL(logoBlob);
+
+    // Get image dimensions to preserve aspect ratio
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error('Failed to load logo'));
+      image.src = logoUrl;
+    });
+
+    const aspectRatio = img.width / img.height;
+    logoHeight = 35;
+    logoWidth = logoHeight * aspectRatio;
+
+    pdf.addImage(logoUrl, 'PNG', margin, 8, logoWidth, logoHeight);
+  } catch (error) {
+    console.warn('Logo not found');
+  }
+
+  // Draw top right decorative bands extending to 1/3 of page width
+  const bandWidth = (pageWidth / 3) - margin; // Extends to approximately 1/3 of page
   const bandHeight = 4;
-  const bandStartX = pageWidth - bandWidth - 8;
+  const bandStartX = pageWidth - bandWidth - margin;
   const bandColor = [31, 41, 102]; // Dark blue
 
   pdf.setFillColor(bandColor[0], bandColor[1], bandColor[2]);
@@ -91,61 +116,56 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
   pdf.rect(bandStartX, 14, bandWidth, bandHeight, 'F');
   pdf.rect(bandStartX, 20, bandWidth, bandHeight, 'F');
 
-  // Load and add logo (left side)
-  try {
-    const logoResponse = await fetch('/logo_zaatcha.png');
-    const logoBlob = await logoResponse.blob();
-    const logoUrl = URL.createObjectURL(logoBlob);
-    pdf.addImage(logoUrl, 'PNG', margin, 8, 30, 30);
-  } catch (error) {
-    console.warn('Logo not found');
-  }
-
-  // Load and add stamp (right side)
+  // Load and add stamp (centered below bands)
   try {
     const stampResponse = await fetch('/stamp_zaatcha.png');
     const stampBlob = await stampResponse.blob();
     const stampUrl = URL.createObjectURL(stampBlob);
-    pdf.addImage(stampUrl, 'PNG', pageWidth - 50, 8, 35, 35);
+    const stampWidth = 30;
+    const stampHeight = 30;
+    const stampX = pageWidth / 2 - stampWidth / 2;
+    const stampY = 26;
+    pdf.addImage(stampUrl, 'PNG', stampX, stampY, stampWidth, stampHeight);
   } catch (error) {
     console.warn('Stamp not found');
   }
 
-  // Center column: Invoice details
+  // Left column: Invoice title with logo
   let yPos = 12;
-  pdf.setFontSize(16);
+  pdf.setFontSize(14);
   pdf.setFont('helvetica', 'bold');
   pdf.setTextColor(0, 0, 0);
-  pdf.text('Agent Invoice', 55, yPos);
+  pdf.text('Agent Invoice', margin + logoWidth + 5, yPos);
   yPos += 8;
 
   pdf.setFontSize(9);
   pdf.setFont('helvetica', 'normal');
-  pdf.text(`Invoice No: ${options.invoiceDetails.invoiceNumber}`, 55, yPos);
+  pdf.text(`Invoice No: ${options.invoiceDetails.invoiceNumber}`, margin + logoWidth + 5, yPos);
   yPos += 4;
-  pdf.text(`Invoice Date: ${options.invoiceDetails.invoiceDate}`, 55, yPos);
+  pdf.text(`Invoice Date: ${options.invoiceDetails.invoiceDate}`, margin + logoWidth + 5, yPos);
   yPos += 4;
-  pdf.text(`Due Date: ${options.invoiceDetails.dueDate}`, 55, yPos);
+  pdf.text(`Due Date: ${options.invoiceDetails.dueDate}`, margin + logoWidth + 5, yPos);
   yPos += 4;
-  pdf.text(`Currency: ${options.invoiceDetails.currency}`, 55, yPos);
+  pdf.text(`Currency: ${options.invoiceDetails.currency}`, margin + logoWidth + 5, yPos);
   yPos += 6;
 
   pdf.setFont('helvetica', 'bold');
-  pdf.text('Billed To:', 55, yPos);
+  pdf.text('Billed To:', margin + logoWidth + 5, yPos);
   yPos += 4;
 
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(9);
-  pdf.text(`Agent Code: ${options.companyInfo.agentCode}`, 55, yPos);
+  pdf.text(`Agent Code: ${options.companyInfo.agentCode}`, margin + logoWidth + 5, yPos);
   yPos += 4;
-  pdf.text(`Agent Name: ${options.companyInfo.name}`, 55, yPos);
+  pdf.text(`Agent Name: ${options.companyInfo.name}`, margin + logoWidth + 5, yPos);
   yPos += 4;
-  pdf.text(`GSA: ${options.companyInfo.gsa}`, 55, yPos);
+  pdf.text(`GSA: ${options.companyInfo.gsa}`, margin + logoWidth + 5, yPos);
 
-  // Right column: Company info
+  // Right column: Company info (right of stamp)
+  const rightColX = pageWidth / 2 + 25;
   pdf.setFontSize(10);
   pdf.setFont('helvetica', 'bold');
-  pdf.text('Zaatcha Voyages Kouba', pageWidth - 55, 12);
+  pdf.text('Zaatcha Voyages Kouba', rightColX, 28, { align: 'left' });
 
   pdf.setFontSize(8);
   pdf.setFont('helvetica', 'normal');
@@ -155,9 +175,9 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
     'www.zaatchavoyages.com',
   ];
 
-  let infoY = 16;
+  let infoY = 32;
   for (const line of companyInfoLines) {
-    pdf.text(line, pageWidth - 55, infoY, { maxWidth: 50, align: 'left' });
+    pdf.text(line, rightColX, infoY, { maxWidth: 60, align: 'left' });
     infoY += 4;
   }
 

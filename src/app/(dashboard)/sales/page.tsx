@@ -8,6 +8,7 @@ import {
   setFormat,
   setMode,
   setOnlyCheckedIn,
+  setSplitByDeparture,
   setError as setSalesError,
   clearError,
   runSalesReport,
@@ -61,6 +62,7 @@ export default function SalesPage() {
         format: sales.format as "Csv" | "Xlsx",
         mode: sales.mode as "short" | "detailed",
         onlyCheckedIn: sales.onlyCheckedIn,
+        splitByDeparture: sales.splitByDeparture,
       };
 
       const res = await dispatch(
@@ -171,6 +173,7 @@ export default function SalesPage() {
               vatSuffix={sales.vatSuffix}
               mode={sales.mode}
               onlyCheckedIn={sales.onlyCheckedIn}
+              splitByDeparture={sales.splitByDeparture}
               hideFormat={true}
               errors={errors}
               onDownloadDateChange={(date) => dispatch(setDownloadDate(date))}
@@ -179,6 +182,9 @@ export default function SalesPage() {
               onModeChange={(mode) => dispatch(setMode(mode))}
               onOnlyCheckedInChange={(checked) =>
                 dispatch(setOnlyCheckedIn(checked))
+              }
+              onSplitByDepartureChange={(checked) =>
+                dispatch(setSplitByDeparture(checked))
               }
             />
 
@@ -237,6 +243,22 @@ export default function SalesPage() {
                       {
                         name: result.salesDetailedName,
                         blob: result.salesDetailedBlob,
+                      },
+                    ]
+                  : []),
+                ...(result.salesSplitByDepartureBlob
+                  ? [
+                      {
+                        name: result.salesSplitByDepartureName,
+                        blob: result.salesSplitByDepartureBlob,
+                      },
+                    ]
+                  : []),
+                ...(result.salesInvoicePdfBlob
+                  ? [
+                      {
+                        name: result.salesInvoicePdfName,
+                        blob: result.salesInvoicePdfBlob,
                       },
                     ]
                   : []),

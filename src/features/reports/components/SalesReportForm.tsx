@@ -11,6 +11,7 @@ interface SalesReportFormProps {
   vatSuffix: string;
   mode: string;
   onlyCheckedIn: boolean;
+  splitByDeparture?: boolean;
   hideFormat?: boolean;
   errors?: Record<string, string>;
   onDownloadDateChange: (date: string) => void;
@@ -18,6 +19,7 @@ interface SalesReportFormProps {
   onVatSuffixChange: (suffix: string) => void;
   onModeChange: (mode: string) => void;
   onOnlyCheckedInChange: (checked: boolean) => void;
+  onSplitByDepartureChange?: (checked: boolean) => void;
 }
 
 export const SalesReportForm: React.FC<SalesReportFormProps> = ({
@@ -27,6 +29,7 @@ export const SalesReportForm: React.FC<SalesReportFormProps> = ({
   vatSuffix,
   mode,
   onlyCheckedIn,
+  splitByDeparture = false,
   hideFormat = false,
   errors = {},
   onDownloadDateChange,
@@ -34,6 +37,7 @@ export const SalesReportForm: React.FC<SalesReportFormProps> = ({
   onVatSuffixChange,
   onModeChange,
   onOnlyCheckedInChange,
+  onSplitByDepartureChange,
 }) => {
   return (
     <Card className="mb-6">
@@ -91,13 +95,21 @@ export const SalesReportForm: React.FC<SalesReportFormProps> = ({
             />
           </div>
 
-          <div className="pt-2">
+          <div className="pt-2 space-y-3">
             <Checkbox
               id="onlyCheckedIn"
               label={MESSAGES.REPORTS.SALES.ONLY_CHECKED_IN}
               checked={onlyCheckedIn}
               onChange={(e) => onOnlyCheckedInChange(e.target.checked)}
             />
+            {onSplitByDepartureChange && (
+              <Checkbox
+                id="splitByDeparture"
+                label="Générer rapport par départ"
+                checked={splitByDeparture}
+                onChange={(e) => onSplitByDepartureChange(e.target.checked)}
+              />
+            )}
           </div>
         </div>
       </CardContent>
