@@ -66,10 +66,7 @@ function extractRowValues(row: Row): MappedValues {
 }
 
 export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<Blob> {
-  const jsPDFModule = await import('jspdf');
-  const { jsPDF } = jsPDFModule;
-
-  await import('jspdf-autotable');
+  const { jsPDF } = await import('jspdf');
 
   const headers = [
     'Code Rés.', 'Date Créa.', 'PAX HT', 'VEH HT', 'Cabin',
@@ -78,7 +75,7 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
   ];
 
   const autresValues: number[] = [];
-  const tableData: (string | number)[][] = [];
+  const tableData: string[][] = [];
   const totals: Record<string, number> = {
     'PAX HT': 0,
     'VEH HT': 0,
@@ -177,70 +174,85 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
     format: 'letter',
   });
 
-  let yPosition = 20;
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 10;
+  const colCount = displayHeaders.length;
+  const colWidth = (pageWidth - 2 * margin) / colCount;
+  const rowHeight = 5;
 
+  let yPos = 15;
+
+  // Header
   pdf.setFontSize(14);
   pdf.setFont('helvetica', 'bold');
-  pdf.text('Agent Invoice', 20, yPosition);
-  yPosition += 10;
+  pdf.text('Agent Invoice', margin, yPos);
+  yPos += 8;
 
   pdf.setFontSize(10);
   pdf.setFont('helvetica', 'normal');
-  pdf.text(`Invoice No: ${options.invoiceDetails.invoiceNumber}`, 20, yPosition);
-  yPosition += 5;
-  pdf.text(`Invoice Date: ${options.invoiceDetails.invoiceDate}`, 20, yPosition);
-  yPosition += 5;
-  pdf.text(`Due Date: ${options.invoiceDetails.dueDate}`, 20, yPosition);
-  yPosition += 5;
-  pdf.text(`Currency: ${options.invoiceDetails.currency}`, 20, yPosition);
-  yPosition += 8;
+  pdf.text(`Invoice No: ${options.invoiceDetails.invoiceNumber}`, margin, yPos);
+  yPos += 4;
+  pdf.text(`Invoice Date: ${options.invoiceDetails.invoiceDate}`, margin, yPos);
+  yPos += 4;
+  pdf.text(`Due Date: ${options.invoiceDetails.dueDate}`, margin, yPos);
+  yPos += 4;
+  pdf.text(`Currency: ${options.invoiceDetails.currency}`, margin, yPos);
+  yPos += 6;
 
   pdf.setFontSize(9);
   pdf.setFont('helvetica', 'bold');
-  pdf.text('Billed To:', 20, yPosition);
-  yPosition += 5;
+  pdf.text('Billed To:', margin, yPos);
+  yPos += 4;
 
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(9);
-  pdf.text(`Agent Code: ${options.companyInfo.agentCode}`, 20, yPosition);
-  yPosition += 4;
-  pdf.text(`Agent Name: ${options.companyInfo.name}`, 20, yPosition);
-  yPosition += 4;
-  pdf.text(`GSA: ${options.companyInfo.gsa}`, 20, yPosition);
-  yPosition += 8;
+  pdf.text(`Agent Code: ${options.companyInfo.agentCode}`, margin, yPos);
+  yPos += 4;
+  pdf.text(`Agent Name: ${options.companyInfo.name}`, margin, yPos);
+  yPos += 4;
+  pdf.text(`GSA: ${options.companyInfo.gsa}`, margin, yPos);
+  yPos += 6;
 
-  const anyPdf = pdf as any;
-  anyPdf.autoTable({
-    head: [displayHeaders],
-    body: displayData,
-    foot: [totalsRow],
-    startY: yPosition,
-    margin: 15,
-    styles: {
-      fontSize: 7,
-      cellPadding: 3,
-      overflow: 'linebreak',
-      halign: 'center',
-      valign: 'middle',
-    },
-    headStyles: {
-      fillColor: [200, 200, 200],
-      textColor: [0, 0, 0],
-      fontStyle: 'bold',
-    },
-    footStyles: {
-      fillColor: [200, 200, 200],
-      textColor: [0, 0, 0],
-      fontStyle: 'bold',
-    },
-    bodyStyles: {
-      halign: 'center',
-      valign: 'middle',
-    },
-    alternateRowStyles: {
-      fillColor: [245, 245, 245],
-    },
-  });
+  const drawTableRow = (row: string[], isTotals: boolean = false) => {
+    if (yPos + rowHeight > pageHeight - margin) {
+      pdf.addPage();
+      yPos = margin;
+    }
+
+    if (isTotals) {
+      pdf.setFillColor(200, 200, 200);
+      pdf.setFont('helvetica', 'bold');
+    } else {
+      pdf.setFillColor(255, 255, 255);
+      pdf.setFont('helvetica', 'normal');
+    }
+
+    for (let i = 0; i < row.length; i++) {
+      const xPos = margin + i * colWidth;
+      pdf.rect(xPos, yPos, colWidth, rowHeight, 'FD');
+      pdf.setFontSize(6.5);
+      pdf.text(row[i], xPos + colWidth / 2, yPos + rowHeight / 2 + 1.2, {
+        align: 'center',
+        maxWidth: colWidth - 0.5,
+      });
+    }
+    yPos += rowHeight;
+  };
+
+  // Draw header row
+  pdf.setFillColor(200, 200, 200);
+  pdf.setFont('helvetica', 'bold');
+  drawTableRow(displayHeaders);
+
+  // Draw data rows
+  pdf.setFont('helvetica', 'normal');
+  for (const row of displayData) {
+    drawTableRow(row);
+  }
+
+  // Draw totals row
+  drawTableRow(totalsRow, true);
 
   return pdf.output('blob') as Blob;
 }
