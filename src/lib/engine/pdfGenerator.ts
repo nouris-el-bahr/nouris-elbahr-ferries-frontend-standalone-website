@@ -45,9 +45,11 @@ function formatNumber(value: number): string {
 }
 
 function extractRowValues(row: Row): MappedValues {
+  const dateCreation = row['Date creation'] ? row['Date creation'].split('T')[0] : '';
+
   return {
     'Code réservation': row['Code reservation'] || '',
-    'Date création': row['Date creation'] || '',
+    'Date création': dateCreation,
     'Montant HT Passagers': Number(row['Montant HT Passagers'] || 0),
     'Montant HT Véhicule': Number(row['Montant HT Véhicule'] || 0),
     'Montant HT Installation Cabin': Number(row['Montant HT Installation Cabin'] || 0),
@@ -180,15 +182,8 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
   const colWidth = (pageWidth - 2 * margin) / colCount;
   const rowHeight = 5;
 
-  // Add background PDF
-  try {
-    const response = await fetch('/NourisT.pdf');
-    const arrayBuffer = await response.arrayBuffer();
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-    pdf.addImage(`data:application/pdf;base64,${base64}`, 'PDF', 0, 0, pageWidth, pageHeight);
-  } catch (error) {
-    console.warn('Background PDF not available, proceeding without background');
-  }
+  // Note: Background PDF cannot be used with jsPDF's addImage (only supports raster images).
+  // To use NourisT.pdf as background, convert it to PNG/JPG first.
 
   let yPos = 18;
 
