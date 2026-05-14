@@ -81,8 +81,8 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
   const margin = 12;
 
   // Load and add logo (left corner) - preserve aspect ratio
-  let logoWidth = 35;
-  let logoHeight = 35;
+  let logoWidth = 25;
+  let logoHeight = 25;
   try {
     const logoResponse = await fetch('/logo_zaatcha.png');
     const logoBlob = await logoResponse.blob();
@@ -285,7 +285,7 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
   const colWidth = (pageWidth - 2 * margin) / colCount;
   const rowHeight = 5;
 
-  yPos = 48;
+  yPos = 70;
 
   const drawCell = (x: number, y: number, width: number, height: number, text: string, isBgGrey: boolean) => {
     pdf.setDrawColor(0, 0, 0);
