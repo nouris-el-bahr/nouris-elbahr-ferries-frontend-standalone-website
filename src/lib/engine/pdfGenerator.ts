@@ -228,13 +228,17 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
       pdf.setFont('helvetica', 'normal');
     }
 
+    pdf.setTextColor(0, 0, 0);
+    pdf.setDrawColor(0, 0, 0);
+    pdf.setLineWidth(0.3);
+
     for (let i = 0; i < row.length; i++) {
       const xPos = margin + i * colWidth;
       pdf.rect(xPos, yPos, colWidth, rowHeight, 'FD');
       pdf.setFontSize(6.5);
-      pdf.text(row[i], xPos + colWidth / 2, yPos + rowHeight / 2 + 1.2, {
+      pdf.text(String(row[i]), xPos + colWidth / 2, yPos + 2.8, {
         align: 'center',
-        maxWidth: colWidth - 0.5,
+        maxWidth: colWidth - 0.8,
       });
     }
     yPos += rowHeight;
