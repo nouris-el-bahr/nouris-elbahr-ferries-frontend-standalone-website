@@ -7,6 +7,7 @@ import {
 } from './common';
 import { parseAnyFile, generateXlsxBlob } from './fileLoaders';
 import { groupBy, sumBy, pivotSum, dropZeroCols } from './pivotUtils';
+import { generateInvoicePDF } from './pdfGenerator';
 
 // ── Constants ──────────────────────────────────────────────────────────
 
@@ -82,6 +83,7 @@ export interface SalesConfig {
   format: string;
   mode: 'short' | 'detailed';
   onlyCheckedIn: boolean;
+  splitByDeparture?: boolean;
 }
 
 export interface SalesRunResult {
@@ -97,6 +99,10 @@ export interface SalesRunResult {
   salesControlGsaName: string;
   salesDetailedBlob: Blob | null;
   salesDetailedName: string;
+  salesSplitByDepartureBlob: Blob | null;
+  salesSplitByDepartureName: string;
+  salesInvoicePdfBlob: Blob | null;
+  salesInvoicePdfName: string;
 }
 
 interface ShortResult {
@@ -212,6 +218,46 @@ export async function runSales(config: SalesConfig, files: File[]): Promise<Sale
     detailedBlob = generateXlsxBlob([{ name: 'Detailed', rows: cleaned }]);
   }
 
+  // 9. Split by departure report (optional)
+  let splitByDepartureBlob: Blob | null = null;
+  let splitByDepartureName = '';
+  if (config.splitByDeparture) {
+    const splitResults = generateSplitByDepartureReport(shortResults);
+    if (splitResults.length > 0) {
+      splitByDepartureName = `${generateId()}_dl${config.downloadDate}_cr${dateRange}_SalesByDeparture.xlsx`;
+      splitByDepartureBlob = generateXlsxBlob([{ name: 'ByDeparture', rows: splitResults }]);
+    }
+  }
+
+  // 10. Generate Invoice PDF (from short report data)
+  let invoicePdfBlob: Blob | null = null;
+  let invoicePdfName = '';
+  try {
+    if (shortResults.length > 0) {
+      invoicePdfBlob = await generateInvoicePDF({
+        companyInfo: {
+          name: 'Nouris Ferries',
+          agentCode: shortResults[0]['Code agent'] || 'N/A',
+          gsa: shortResults[0]['GSA agent'] || 'N/A',
+        },
+        invoiceDetails: {
+          invoiceNumber: `${config.downloadDate.replace(/-/g, '')}00001`,
+          invoiceDate: config.downloadDate,
+          dueDate: new Date(new Date(config.downloadDate).getTime() + 15 * 24 * 60 * 60 * 1000)
+            .toISOString()
+            .split('T')[0],
+          currency: shortResults[0]['Devise'] || 'DZD',
+        },
+        bookingsData: shortResults,
+      });
+
+      invoicePdfName = `${generateId()}_dl${config.downloadDate}_cr${dateRange}_SalesInvoice.pdf`;
+    }
+  } catch (error) {
+    console.error('Error generating invoice PDF:', error);
+    // Continue without PDF if generation fails
+  }
+
   return {
     salesShortBlob: shortBlob,
     salesShortName: shortName,
@@ -225,6 +271,10 @@ export async function runSales(config: SalesConfig, files: File[]): Promise<Sale
     salesControlGsaName: gsaName,
     salesDetailedBlob: detailedBlob,
     salesDetailedName: detailedName,
+    salesSplitByDepartureBlob: splitByDepartureBlob,
+    salesSplitByDepartureName: splitByDepartureName,
+    salesInvoicePdfBlob: invoicePdfBlob,
+    salesInvoicePdfName: invoicePdfName,
   };
 }
 
@@ -296,6 +346,39 @@ function extractBookingData(
     0
   );
 
+  // Passenger & vehicle counts
+  const countP = sumBy(
+    bookingRows.filter((r) => r['Category Group Code'] === 'P'),
+    'Category Quantity'
+  );
+  const countPRih = sumBy(
+    bookingRows.filter((r) => r['Category Group Code'] === 'PR'),
+    'Category Quantity'
+  );
+  const countVt = sumBy(
+    bookingRows.filter((r) => r['Category Code'] === 'CARL'),
+    'Category Quantity'
+  );
+  const countVc = sumBy(
+    bookingRows.filter((r) =>
+      ['CARM', 'CARH'].includes(r['Category Code'])
+    ),
+    'Category Quantity'
+  );
+  const countVa = sumBy(
+    bookingRows.filter(
+      (r) =>
+        r['Category Group Code'] === 'V' &&
+        !['CARL', 'CARM', 'CARH'].includes(r['Category Code'])
+    ),
+    'Category Quantity'
+  );
+
+  // Installation counts (Cabin, Beds, Chairs)
+  const countC = (qtyByName['Cabin'] || 0);
+  const countL = ((qtyByName['Cabin M'] || 0) + (qtyByName['Cabin F'] || 0));
+  const countF = (qtyByName['Seat'] || 0);
+
   // Scalars
   const total = sumBy(bookingRows, priceCol);
   const balance = parseFloat(firstRow['Payment Balance']) || 0;
@@ -362,6 +445,31 @@ function extractBookingData(
     (amountsByCode['AMD'] || 0) -
     (amountsByCode['CAN'] || 0);
 
+  // HT breakdown by category type
+  const htP = round2((amountsByGroup['P'] || 0) + (amountsByGroup['PR'] || 0));
+  const htV = round2(amountsByGroup['V'] || 0);
+
+  // Installation breakdown (Cabin, Beds, Chairs)
+  // Apply same Category Specification Code transformation as quantities
+  const htC = round2(sumBy(
+    bookingRows.filter((r) => {
+      const modifiedName = `${r['Category Group Name'] || ''} ${r['Category Specification Code'] || ''}`.trim();
+      return modifiedName === 'Cabin';
+    }),
+    priceCol
+  ));
+  const htL = round2(sumBy(
+    bookingRows.filter((r) => {
+      const modifiedName = `${r['Category Group Name'] || ''} ${r['Category Specification Code'] || ''}`.trim();
+      return ['Cabin M', 'Cabin F'].includes(modifiedName);
+    }),
+    priceCol
+  ));
+  const htF = round2(amountsByGroup['S'] || 0);
+
+  const htA = round2(amountsByGroup['K9'] || 0);
+  const htX = round2(ht - htP - htV - htC - htL - htF - htA);
+
   // Commission calculation
   const calculatedCommission = round2(
     ((amountsByCode['TAXH1'] || 0) +
@@ -385,11 +493,26 @@ function extractBookingData(
     'Nom client': bookingCustomerName,
     'Prenom client': bookingCustomerFirstName,
     Reference: bookingRef,
+    'Nombre passagers': countP,
+    'Nombre passagers RIH': countPRih,
+    'Nombre véhicules touristique': countVt,
+    'Nombre véhicules commercial': countVc,
+    "Nombre d'autre véhicules": countVa,
+    'Nombre cabine': countC,
+    'Nombre lit': countL,
+    'Nombre fauteuil': countF,
     'Code depart aller': alCode,
     'Check-in aller': alChk,
     'Code depart retour': reCode,
     'Check-in retour': reChk,
     Devise: bookingCurrency,
+    'Montant HT Passagers': htP,
+    'Montant HT Véhicule': htV,
+    'Montant HT Installation Cabin': htC,
+    'Montant HT Installation Lit': htL,
+    'Montant HT Installation Fauteuil': htF,
+    'Montant HT Animaux et extra': htA,
+    'Montant HT Autres': htX,
     'Frais carburant vehicule': round2(amountsByCode['FUELV'] || 0),
     'Frais carburant': round2(amountsByCode['FUEL'] || 0),
     'Frais passagers': round2(
@@ -613,4 +736,117 @@ function generateControlReport(rows: Row[]): ControlReportResult {
   if (tarifGsa.length > 0) gsaSheets['Tarif_Manuel'] = tarifGsa;
 
   return { nourisSheets, gsaSheets };
+}
+
+// ── Split by departure report ──────────────────────────────────────────
+
+function generateSplitByDepartureReport(rows: Row[]): Row[] {
+  const result: Row[] = [];
+
+  for (const row of rows) {
+    const hasAller = row['Code depart aller'] || row['Check-in aller'];
+    const hasRetour = row['Code depart retour'] || row['Check-in retour'];
+
+    if (hasAller) {
+      result.push({
+        'Code reservation': row['Code reservation'],
+        'Statut reservation': row['Statut reservation'],
+        'Cree par': row['Cree par'],
+        'Date creation': row['Date creation'],
+        'Code agent': row['Code agent'],
+        'Nom agent': row['Nom agent'],
+        'GSA agent': row['GSA agent'],
+        'GSA commission agent': row['GSA commission agent'],
+        'Nom client': row['Nom client'],
+        'Prenom client': row['Prenom client'],
+        'Nombre passagers': row['Nombre passagers'],
+        'Nombre passagers RIH': row['Nombre passagers RIH'],
+        'Nombre véhicules touristique': row['Nombre véhicules touristique'],
+        'Nombre véhicules commercial': row['Nombre véhicules commercial'],
+        "Nombre d'autre véhicules": row["Nombre d'autre véhicules"],
+        'Nombre cabine': row['Nombre cabine'],
+        'Nombre lit': row['Nombre lit'],
+        'Nombre fauteuil': row['Nombre fauteuil'],
+        Reference: row['Reference'],
+        'Code depart': row['Code depart aller'],
+        'Check-in': row['Check-in aller'],
+        Devise: row['Devise'],
+        'Montant HT Passagers': row['Montant HT Passagers'],
+        'Montant HT Véhicule': row['Montant HT Véhicule'],
+        'Montant HT Installation Cabin': row['Montant HT Installation Cabin'],
+        'Montant HT Installation Lit': row['Montant HT Installation Lit'],
+        'Montant HT Installation Fauteuil': row['Montant HT Installation Fauteuil'],
+        'Montant HT Animaux et extra': row['Montant HT Animaux et extra'],
+        'Montant HT Autres': row['Montant HT Autres'],
+        'Frais carburant vehicule': row['Frais carburant vehicule'],
+        'Frais carburant': row['Frais carburant'],
+        'Frais passagers': row['Frais passagers'],
+        'Frais vehicule': row['Frais vehicule'],
+        'Frais hauteur': row['Frais hauteur'],
+        'Frais modification': row['Frais modification'],
+        'Frais annulation': row['Frais annulation'],
+        'Montant HT': row['Montant HT'],
+        'Montant TTC': row['Montant TTC'],
+        'Solde restant du': row['Solde restant du'],
+        'Commission agent': row['Commission agent'],
+        'Commission calculer agent': row['Commission calculer agent'],
+        'Commission diff agent': row['Commission diff agent'],
+        'Tarif manuel HT': row['Tarif manuel HT'],
+        'Tarif manuel Frais': row['Tarif manuel Frais'],
+        'Devise incompatible': row['Devise incompatible'],
+      });
+    }
+
+    if (hasRetour) {
+      result.push({
+        'Code reservation': row['Code reservation'],
+        'Statut reservation': row['Statut reservation'],
+        'Cree par': row['Cree par'],
+        'Date creation': row['Date creation'],
+        'Code agent': row['Code agent'],
+        'Nom agent': row['Nom agent'],
+        'GSA agent': row['GSA agent'],
+        'GSA commission agent': row['GSA commission agent'],
+        'Nom client': row['Nom client'],
+        'Prenom client': row['Prenom client'],
+        'Nombre passagers': row['Nombre passagers'],
+        'Nombre passagers RIH': row['Nombre passagers RIH'],
+        'Nombre véhicules touristique': row['Nombre véhicules touristique'],
+        'Nombre véhicules commercial': row['Nombre véhicules commercial'],
+        "Nombre d'autre véhicules": row["Nombre d'autre véhicules"],
+        'Nombre cabine': row['Nombre cabine'],
+        'Nombre lit': row['Nombre lit'],
+        'Nombre fauteuil': row['Nombre fauteuil'],
+        Reference: row['Reference'],
+        'Code depart': row['Code depart retour'],
+        'Check-in': row['Check-in retour'],
+        Devise: row['Devise'],
+        'Montant HT Passagers': row['Montant HT Passagers'],
+        'Montant HT Véhicule': row['Montant HT Véhicule'],
+        'Montant HT Installation Cabin': row['Montant HT Installation Cabin'],
+        'Montant HT Installation Lit': row['Montant HT Installation Lit'],
+        'Montant HT Installation Fauteuil': row['Montant HT Installation Fauteuil'],
+        'Montant HT Animaux et extra': row['Montant HT Animaux et extra'],
+        'Montant HT Autres': row['Montant HT Autres'],
+        'Frais carburant vehicule': row['Frais carburant vehicule'],
+        'Frais carburant': row['Frais carburant'],
+        'Frais passagers': row['Frais passagers'],
+        'Frais vehicule': row['Frais vehicule'],
+        'Frais hauteur': row['Frais hauteur'],
+        'Frais modification': row['Frais modification'],
+        'Frais annulation': row['Frais annulation'],
+        'Montant HT': row['Montant HT'],
+        'Montant TTC': row['Montant TTC'],
+        'Solde restant du': row['Solde restant du'],
+        'Commission agent': row['Commission agent'],
+        'Commission calculer agent': row['Commission calculer agent'],
+        'Commission diff agent': row['Commission diff agent'],
+        'Tarif manuel HT': row['Tarif manuel HT'],
+        'Tarif manuel Frais': row['Tarif manuel Frais'],
+        'Devise incompatible': row['Devise incompatible'],
+      });
+    }
+  }
+
+  return result;
 }

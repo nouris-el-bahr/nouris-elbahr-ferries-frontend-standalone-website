@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
-import { Archivo } from "next/font/google";
 import { ReduxProvider } from "@/providers/ReduxProvider";
 import "./globals.css";
-
-const archivo = Archivo({
-  subsets: ["latin"],
-  variable: "--font-archivo",
-});
 
 export const metadata: Metadata = {
   title: "Nouris Dashboard",
@@ -29,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body className={`${archivo.variable} font-archivo`}>
+      <body className="font-archivo">
         <ReduxProvider>{children}</ReduxProvider>
       </body>
     </html>
