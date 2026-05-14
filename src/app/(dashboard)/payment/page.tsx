@@ -11,13 +11,14 @@ import {
   runPaymentReport,
 } from "@/store/slices/paymentSlice";
 import { addResults } from "@/store/slices/resultsSlice";
-import { PageContainer, PageHeader, Button, Alert, Input, Spinner, Card } from "@/shared";
+import { PageContainer, PageHeader, Button, Alert, Spinner, Card } from "@/shared";
 import {
   PaymentReportForm,
-  ReferenceFileSelector,
   ReportResults,
   StepIndicator,
 } from "@/features/reports/components";
+import FileInputSelector from "@/components/FileInputSelector";
+import { FolderFileTypeSelector } from "@/components/FolderFileTypeSelector";
 import { triggerDownload } from "@/lib/engine/fileLoaders";
 import { MESSAGES } from "@/constants";
 
@@ -30,6 +31,7 @@ export default function PaymentPage() {
   const [refFiles, setRefFiles] = useState<File[]>([]);
   const [refFileType, setRefFileType] = useState<"Csv" | "Xlsx">("Csv");
   const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
+  const [invoiceFileType, setInvoiceFileType] = useState<"Csv" | "Xlsx">("Csv");
   const [result, setResult] = useState<any>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -93,7 +95,9 @@ export default function PaymentPage() {
       const res = await dispatch(
         runPaymentReport({
           refFiles,
+          refFileType,
           invoiceFile: invoiceFile!,
+          invoiceFileType,
           factDate: pay.factDate,
           periodStart: pay.periodStart,
           periodEnd: pay.periodEnd,
@@ -163,19 +167,25 @@ export default function PaymentPage() {
         )}
 
         {/* Step 1: Reference Folder */}
-        <ReferenceFileSelector
+        <FolderFileTypeSelector
           stepNumber={1}
-          title={MESSAGES.REPORTS.PAYMENT.SELECT_REFERENCE_FOLDER}
-          label={MESSAGES.REPORTS.PAYMENT.SELECT_REFERENCE_FOLDER}
+          title={MESSAGES.REPORTS.PAYMENT.SELECT_FILES_FOLDER}
+          label={MESSAGES.REPORTS.PAYMENT.SELECT_FILES_FOLDER_LABEL}
+          hint={MESSAGES.REPORTS.SALES.REFERENCE_FILES_HINT}
           folderPath={refFolderPath}
           files={refFiles}
+          selectedFiles={refFolderFiles || []}
           fileType={refFileType}
           disabled={pay.running}
-          onFolderSelect={(path, files) => {
+          onFolderSelect={(path: string, files?: File[]) => {
             setRefFolderPath(path);
             setRefFolderFiles(files);
           }}
-          onFileTypeChange={setRefFileType}
+          onFileTypeChange={(type: string) => setRefFileType(type as "Csv" | "Xlsx")}
+          fileTypeOptions={[
+            { value: "Csv", label: "CSV" },
+            { value: "Xlsx", label: "Excel" },
+          ]}
         />
 
         {/* Step 2: Invoice File */}
@@ -186,13 +196,18 @@ export default function PaymentPage() {
                 <span className="step-badge">2</span>
                 {MESSAGES.REPORTS.PAYMENT.SELECT_INVOICE_FILE}
               </h2>
-              <Input
-                type="file"
-                accept=".csv,.xlsx,.xls"
-                label="Fichier CSV ou Excel"
-                helperText={invoiceFile ? `✓ ${invoiceFile.name}` : undefined}
-                onChange={(e) => setInvoiceFile(e.target.files?.[0] || null)}
+              <FileInputSelector
+                label="Fichier"
+                onFileSelect={setInvoiceFile}
                 disabled={pay.running}
+                fileType={invoiceFileType}
+                onFileTypeChange={(type) => setInvoiceFileType(type as "Csv" | "Xlsx")}
+                fileTypeOptions={[
+                  { value: "Csv", label: "CSV" },
+                  { value: "Xlsx", label: "Excel" },
+                ]}
+                accept={invoiceFileType === "Csv" ? ".csv" : ".xlsx,.xls"}
+                selectedFile={invoiceFile}
               />
               {errors.invoice && (
                 <p className="text-error text-sm mt-2">{errors.invoice}</p>

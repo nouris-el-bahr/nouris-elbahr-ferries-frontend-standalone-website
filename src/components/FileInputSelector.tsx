@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { FolderOpen, X } from "lucide-react";
+import { Upload, X } from "lucide-react";
 import { Button, Select } from "@/shared";
 
 interface FileTypeOption {
@@ -9,58 +9,53 @@ interface FileTypeOption {
   label: string;
 }
 
-interface FolderSelectorProps {
+interface FileInputSelectorProps {
   label: string;
   hint?: string;
-  onFolderSelect: (path: string, files?: File[]) => void;
+  onFileSelect: (file: File | null) => void;
   disabled?: boolean;
   fileType?: string;
   onFileTypeChange?: (type: string) => void;
   fileTypeOptions?: FileTypeOption[];
+  accept?: string;
+  selectedFile?: File | null;
 }
 
-export default function FolderSelector({
+export default function FileInputSelector({
   label,
   hint,
-  onFolderSelect,
+  onFileSelect,
   disabled = false,
   fileType,
   onFileTypeChange,
   fileTypeOptions,
-}: FolderSelectorProps) {
+  accept,
+  selectedFile,
+}: FileInputSelectorProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [selectedPath, setSelectedPath] = useState("");
+  const [selectedFileName, setSelectedFileName] = useState("");
 
-  const handleSelectFolder = () => {
+  const handleSelectFile = () => {
     if (inputRef.current) {
-      inputRef.current.setAttribute("webkitdirectory", "");
       inputRef.current.click();
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const fileList = e.target.files;
-      const firstFile = fileList[0];
-      const relativePath = firstFile.webkitRelativePath || firstFile.name;
-      const pathParts = relativePath.split("/");
-      const folderName = pathParts[0];
-
-      // Convert FileList to File array (FileList gets stale after input reset)
-      const filesArray = Array.from(fileList);
-
-      setSelectedPath(folderName);
-      onFolderSelect(folderName, filesArray);
+      const file = e.target.files[0];
+      setSelectedFileName(file.name);
+      onFileSelect(file);
     }
-    // Reset input so same folder can be selected again
     e.target.value = "";
   };
 
   const handleClear = () => {
-    setSelectedPath("");
+    setSelectedFileName("");
     if (inputRef.current) {
       inputRef.current.value = "";
     }
+    onFileSelect(null);
   };
 
   return (
@@ -68,9 +63,11 @@ export default function FolderSelector({
       <label className="label">{label}</label>
       <div className="flex gap-2 items-end">
         <div className="flex-1 flex items-center bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5">
-          {selectedPath ? (
+          {selectedFileName || selectedFile?.name ? (
             <div className="flex items-center justify-between flex-1 min-w-0">
-              <p className="text-sm font-mono text-gray-700 truncate">{selectedPath}</p>
+              <p className="text-sm font-mono text-gray-700 truncate">
+                {selectedFileName || selectedFile?.name}
+              </p>
               <button
                 type="button"
                 onClick={handleClear}
@@ -81,7 +78,7 @@ export default function FolderSelector({
               </button>
             </div>
           ) : (
-            <p className="text-sm text-gray-400">Aucun dossier sélectionné</p>
+            <p className="text-sm text-gray-400">Aucun fichier sélectionné</p>
           )}
         </div>
         {fileTypeOptions && fileType !== undefined && onFileTypeChange && (
@@ -96,24 +93,24 @@ export default function FolderSelector({
           </div>
         )}
         <Button
-          onClick={handleSelectFolder}
+          onClick={handleSelectFile}
           disabled={disabled}
           variant="secondary"
           className="shrink-0"
-          leftIcon={<FolderOpen size={15} />}
+          leftIcon={<Upload size={15} />}
         >
           Sélectionner
         </Button>
       </div>
       {hint && <p className="text-xs text-gray-400 mt-1">{hint}</p>}
 
-      {/* Hidden file input with webkitdirectory */}
+      {/* Hidden file input */}
       <input
         ref={inputRef}
         type="file"
-        multiple
         className="hidden"
         onChange={handleChange}
+        accept={accept}
       />
     </div>
   );

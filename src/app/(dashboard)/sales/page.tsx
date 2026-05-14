@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   setDownloadDate,
@@ -19,7 +19,7 @@ import {
   StepIndicator,
   ReportResults,
 } from "@/features/reports/components";
-import FolderSelector from "@/components/FolderSelector";
+import { FolderFileTypeSelector } from "@/components/FolderFileTypeSelector";
 import { triggerDownload } from "@/lib/engine/fileLoaders";
 import { MESSAGES } from "@/constants";
 
@@ -31,42 +31,8 @@ export default function SalesPage() {
   const [salesFolderFiles, setSalesFolderFiles] = useState<
     File[] | undefined
   >();
-  const [salesFiles, setSalesFiles] = useState<
-    { name: string; path: string; size: number }[]
-  >([]);
   const [result, setResult] = useState<any>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  // Filter sales files by format
-  useEffect(() => {
-    if (!salesFolderFiles || salesFolderFiles.length === 0) {
-      setSalesFiles([]);
-      return;
-    }
-
-    const extensions = sales.format === "Csv" ? [".csv"] : [".xlsx", ".xls"];
-    const filtered = salesFolderFiles.filter((f) =>
-      extensions.includes(
-        f.name.substring(f.name.lastIndexOf(".")).toLowerCase(),
-      ),
-    );
-
-    setSalesFiles(
-      filtered.map((f) => ({
-        name: f.name,
-        path: (f as any).webkitRelativePath || f.name,
-        size: f.size,
-      })),
-    );
-
-    if (filtered.length === 0 && salesFolderPath) {
-      dispatch(
-        setSalesError(
-          `Aucun fichier ${sales.format === "Csv" ? "CSV" : "Excel"} trouvé`,
-        ),
-      );
-    }
-  }, [salesFolderFiles, sales.format, dispatch, salesFolderPath]);
 
   const handleRun = async () => {
     const newErrors: Record<string, string> = {};
@@ -174,29 +140,26 @@ export default function SalesPage() {
         )}
 
         {/* Step 1: File Selection - Format and Folder */}
-        <Card className="mb-6">
-          <div className="px-6 py-4">
-            <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
-              <span className="step-badge">1</span>
-              {MESSAGES.REPORTS.SALES.SELECT_FILES}
-            </h2>
-            <FolderSelector
-              label="Dossier de ventes"
-              hint="Sélectionnez le dossier contenant vos fichiers CSV ou Excel"
-              onFolderSelect={(path, files) => {
-                setSalesFolderPath(path);
-                setSalesFolderFiles(files);
-              }}
-              disabled={sales.running}
-              fileType={sales.format}
-              onFileTypeChange={(format) => dispatch(setFormat(format))}
-              fileTypeOptions={[
-                { value: "Csv", label: "CSV" },
-                { value: "Xlsx", label: "Excel" },
-              ]}
-            />
-          </div>
-        </Card>
+        <FolderFileTypeSelector
+          stepNumber={1}
+          title={MESSAGES.REPORTS.SALES.SELECT_FILES_FOLDER}
+          label={MESSAGES.REPORTS.SALES.SELECT_FILES_FOLDER_LABEL}
+          hint={MESSAGES.REPORTS.SALES.REFERENCE_FILES_HINT}
+          folderPath={salesFolderPath}
+          files={salesFolderFiles || []}
+          selectedFiles={salesFolderFiles || []}
+          fileType={sales.format}
+          onFolderSelect={(path, files) => {
+            setSalesFolderPath(path);
+            setSalesFolderFiles(files);
+          }}
+          onFileTypeChange={(format) => dispatch(setFormat(format))}
+          fileTypeOptions={[
+            { value: "Csv", label: "CSV" },
+            { value: "Xlsx", label: "Excel" },
+          ]}
+          disabled={sales.running}
+        />
 
         {/* Step 2: Settings */}
         {salesFolderPath && (
@@ -218,37 +181,6 @@ export default function SalesPage() {
                 dispatch(setOnlyCheckedIn(checked))
               }
             />
-
-            {/* List Files */}
-            <Card className="mb-6">
-              <div className="px-6 py-4">
-                <h2 className="font-semibold text-nouris-navy mb-4 flex items-center gap-2">
-                  <span className="step-badge">3</span>
-                  {MESSAGES.REPORTS.SALES.FILES_DETECTED}
-                </h2>
-                {salesFiles.length > 0 ? (
-                  <div className="space-y-2 mb-4">
-                    {salesFiles.map((f) => (
-                      <div
-                        key={f.name}
-                        className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 border border-gray-200 text-sm text-gray-700"
-                      >
-                        <span>✓</span>
-                        <span>{f.name}</span>
-                      </div>
-                    ))}
-                    <p className="text-xs text-gray-500 mt-2">
-                      {salesFiles.length} fichier(s) prêt(s)
-                    </p>
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500 py-4">
-                    Aucun fichier {sales.format === "Csv" ? "CSV" : "Excel"}{" "}
-                    trouvé
-                  </p>
-                )}
-              </div>
-            </Card>
 
             {/* Run Button */}
             <Card className="mb-6">

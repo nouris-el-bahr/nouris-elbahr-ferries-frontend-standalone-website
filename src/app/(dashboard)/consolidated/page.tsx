@@ -11,7 +11,6 @@ import {
 } from "@/store/slices/paymentSlice";
 import {
   setSnapshotFile,
-  clearSnapshotFile,
 } from "@/store/slices/snapshotsSlice";
 import { addResults } from "@/store/slices/resultsSlice";
 import { runConsolidated } from "@/lib/engine/consolidatedEngine";
@@ -29,6 +28,7 @@ import {
   ReportResults,
   StepIndicator,
 } from "@/features/reports/components";
+import FileInputSelector from "@/components/FileInputSelector";
 import { MESSAGES } from "@/constants";
 
 export default function ConsolidatedPage() {
@@ -36,7 +36,9 @@ export default function ConsolidatedPage() {
   const snaps = useAppSelector((s) => s.snapshots);
   const pay = useAppSelector((s) => s.payment);
 
+  const [snapshotFileType, setSnapshotFileType] = useState<"Csv" | "Xlsx">("Csv");
   const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
+  const [invoiceFileType, setInvoiceFileType] = useState<"Csv" | "Xlsx">("Csv");
   const [salesFile, setSalesFile] = useState<File | null>(null);
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -140,17 +142,22 @@ export default function ConsolidatedPage() {
               <span className="step-badge">1</span>
               {MESSAGES.REPORTS.CONSOLIDATED.SELECT_SNAPSHOT}
             </h2>
-            <Input
-              type="file"
-              accept=".csv"
-              label={MESSAGES.REPORTS.CONSOLIDATED.SELECT_SNAPSHOT}
-              helperText={snaps.snapshotFile ? `✓ ${snaps.snapshotFile.name}` : undefined}
-              onChange={(e) => {
-                const files = (e.target as HTMLInputElement).files;
-                if (files?.[0]) {
-                  dispatch(setSnapshotFile(files[0]));
+            <FileInputSelector
+              label="Fichier"
+              onFileSelect={(file) => {
+                if (file) {
+                  dispatch(setSnapshotFile(file));
                 }
               }}
+              disabled={running}
+              fileType={snapshotFileType}
+              onFileTypeChange={(type) => setSnapshotFileType(type as "Csv" | "Xlsx")}
+              fileTypeOptions={[
+                { value: "Csv", label: "CSV" },
+                { value: "Xlsx", label: "Excel" },
+              ]}
+              accept={snapshotFileType === "Csv" ? ".csv" : ".xlsx,.xls"}
+              selectedFile={snaps.snapshotFile?.file}
             />
           </div>
         </Card>
@@ -163,15 +170,18 @@ export default function ConsolidatedPage() {
                 <span className="step-badge">2</span>
                 {MESSAGES.REPORTS.CONSOLIDATED.SELECT_INVOICE_FILE}
               </h2>
-              <Input
-                type="file"
-                accept=".csv,.xlsx,.xls"
-                label="Fichier CSV ou Excel"
-                helperText={invoiceFile ? `✓ ${invoiceFile.name}` : undefined}
-                onChange={(e) => {
-                  const files = (e.target as HTMLInputElement).files;
-                  setInvoiceFile(files?.[0] || null);
-                }}
+              <FileInputSelector
+                label="Fichier"
+                onFileSelect={setInvoiceFile}
+                disabled={running}
+                fileType={invoiceFileType}
+                onFileTypeChange={(type) => setInvoiceFileType(type as "Csv" | "Xlsx")}
+                fileTypeOptions={[
+                  { value: "Csv", label: "CSV" },
+                  { value: "Xlsx", label: "Excel" },
+                ]}
+                accept={invoiceFileType === "Csv" ? ".csv" : ".xlsx,.xls"}
+                selectedFile={invoiceFile}
               />
             </div>
           </Card>
@@ -185,15 +195,12 @@ export default function ConsolidatedPage() {
                 <span className="step-badge">3</span>
                 {MESSAGES.REPORTS.CONSOLIDATED.SELECT_SALES_FILE}
               </h2>
-              <Input
-                type="file"
+              <FileInputSelector
+                label="Fichier Excel (optionnel)"
+                onFileSelect={setSalesFile}
+                disabled={running}
                 accept=".xlsx,.xls"
-                label="Fichier Excel SalesInvoice"
-                helperText={salesFile ? `✓ ${salesFile.name}` : undefined}
-                onChange={(e) => {
-                  const files = (e.target as HTMLInputElement).files;
-                  setSalesFile(files?.[0] || null);
-                }}
+                selectedFile={salesFile}
               />
             </div>
           </Card>

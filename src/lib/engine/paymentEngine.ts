@@ -70,11 +70,14 @@ export const INVOICE_COLUMNS = [
 
 export interface PaymentRunParams {
   refFiles: File[];
+  refFileType: "Csv" | "Xlsx";
   invoiceFile: File;
+  invoiceFileType: "Csv" | "Xlsx";
   factDate: string; // YYYY-MM-DD
   periodStart: string; // YYYY-MM-DD
   periodEnd: string; // YYYY-MM-DD
   salesInvoiceFile?: File;
+  salesFileType?: "Csv" | "Xlsx";
 }
 
 export interface PaymentRunResult {
@@ -146,10 +149,12 @@ export async function runPayment(params: PaymentRunParams): Promise<PaymentRunRe
   try {
     console.log('[STEP 1] Loading reference files...');
     console.log(`  - Files to load: ${params.refFiles.length}`);
-    const refRows = await loadReferenceFromFiles(params.refFiles, 'Csv');
+    console.log(`  - File type: ${params.refFileType}`);
+    const refRows = await loadReferenceFromFiles(params.refFiles, params.refFileType);
     console.log(`  ✓ Reference loaded: ${refRows.length} rows`);
 
     console.log('[STEP 2] Loading invoice file...');
+    console.log(`  - File type: ${params.invoiceFileType}`);
     const factRows = await parseAnyFile(params.invoiceFile);
     console.log(`  ✓ Invoice loaded: ${factRows.length} rows`);
 
@@ -177,17 +182,40 @@ export async function runPayment(params: PaymentRunParams): Promise<PaymentRunRe
     });
     console.log(`  ✓ Datetime columns parsed`);
 
+    // Debug: Check sample dates
+    console.log(`  - Sample invoice dates:`);
+    factRowsTrimmed.slice(0, 3).forEach((r, i) => {
+      console.log(`    [${i}] Created: ${r['Created']} (type: ${typeof r['Created']})`);
+    });
+
     console.log('[STEP 6] Filtering to invoice period...');
     const periodStart = new Date(params.periodStart);
     const periodEnd = new Date(params.periodEnd);
     periodEnd.setDate(periodEnd.getDate() + 1);
     console.log(`  - Period: ${periodStart.toISOString().split('T')[0]} to ${periodEnd.toISOString().split('T')[0]}`);
+    console.log(`  - Period start (full): ${periodStart}`);
+    console.log(`  - Period end (full): ${periodEnd}`);
 
     const toBeInvoiced = factRowsTrimmed.filter((r) => {
       const created = r['Created'];
+      if (!created || !(created instanceof Date) || isNaN(created.getTime())) {
+        return false;
+      }
       return created >= periodStart && created < periodEnd;
     });
     console.log(`  ✓ Filtered rows: ${toBeInvoiced.length} invoices in period`);
+
+    if (toBeInvoiced.length === 0) {
+      console.log(`  ⚠ Warning: No invoices found in period. Checking date range of all invoices...`);
+      const dates = factRowsTrimmed
+        .map(r => r['Created'])
+        .filter(d => d instanceof Date && !isNaN(d.getTime()))
+        .sort((a, b) => (a as any) - (b as any));
+      if (dates.length > 0) {
+        console.log(`  - Earliest invoice: ${(dates[0] as Date).toISOString().split('T')[0]}`);
+        console.log(`  - Latest invoice: ${(dates[dates.length - 1] as Date).toISOString().split('T')[0]}`);
+      }
+    }
 
   // 5. Handle AGI modifications
   const oldAgiMap = new Map<string, Row>();

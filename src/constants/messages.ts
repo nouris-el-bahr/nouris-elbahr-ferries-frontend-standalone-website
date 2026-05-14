@@ -37,7 +37,8 @@ export const MESSAGES = {
     PAYMENT: {
       TITLE: "Rapport de paiement",
       DESCRIPTION: "Générez la facture et le rapport de paiement groupé",
-      SELECT_REFERENCE_FOLDER: "Dossier de rapports",
+      SELECT_FILES_FOLDER: "Sélectionner le dossier des fichiers",
+      SELECT_FILES_FOLDER_LABEL: "Dossier des rapport de payment",
       SELECT_INVOICE_FILE: "Fichier de facture",
       BILLING_PERIOD: "Période de facturation",
       DOWNLOAD_DATE: "Date de téléchargement",
@@ -52,7 +53,9 @@ export const MESSAGES = {
     SALES: {
       TITLE: "Rapport de ventes",
       DESCRIPTION: "Générez le rapport de ventes détaillé",
-      SELECT_FILES: "Sélectionner les fichiers",
+      SELECT_FILES_FOLDER: "Sélectionner le dossier des fichiers",
+      SELECT_FILES_FOLDER_LABEL: "Dossier des rapport de vent",
+      REFERENCE_FILES_HINT: "Sélectionnez le dossier contenant vos fichiers CSV ou Excel de référence",
       PARAMETERS: "Paramètres",
       DOWNLOAD_DATE: "Date de téléchargement",
       FORMAT: "Format",
