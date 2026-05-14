@@ -1,5 +1,3 @@
-'use client';
-
 import { Row } from './common';
 
 interface InvoiceDetails {
@@ -68,7 +66,6 @@ function extractRowValues(row: Row): MappedValues {
 export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<Blob> {
   try {
     const { jsPDF } = await import('jspdf');
-    const { default: html2canvas } = await import('html2canvas');
 
     const headers = [
       'Code Rés.', 'Date Créa.', 'PAX HT', 'VEH HT', 'Cabin',
@@ -170,87 +167,76 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
       formatNumber(totals['Commission']),
     ];
 
-    const headerCells = displayHeaders.map(h => `<th style="border: 1px solid #000; padding: 4px; background-color: #ccc; font-weight: bold; font-size: 8px; text-align: center;">${h}</th>`).join('');
-
-    const dataRows = displayData.map(row => {
-      const cells = row.map(cell => `<td style="border: 1px solid #000; padding: 3px; text-align: center; font-size: 7px;">${cell}</td>`).join('');
-      return `<tr>${cells}</tr>`;
-    }).join('');
-
-    const totalsRowHtml = `<tr style="background-color: #ccc; font-weight: bold;">
-      ${totalsRow.map(cell => `<td style="border: 1px solid #000; padding: 3px; text-align: center; font-size: 7px;">${cell}</td>`).join('')}
-    </tr>`;
-
-    const htmlContent = `
-      <div style="font-family: Helvetica, Arial, sans-serif; margin: 20px; padding: 0;">
-        <h1 style="font-size: 14px; font-weight: bold; margin-bottom: 10px;">Agent Invoice</h1>
-
-        <div style="font-size: 10px; margin-bottom: 15px;">
-          <p style="margin: 3px 0;"><strong>Invoice No:</strong> ${options.invoiceDetails.invoiceNumber}</p>
-          <p style="margin: 3px 0;"><strong>Invoice Date:</strong> ${options.invoiceDetails.invoiceDate}</p>
-          <p style="margin: 3px 0;"><strong>Due Date:</strong> ${options.invoiceDetails.dueDate}</p>
-          <p style="margin: 3px 0;"><strong>Currency:</strong> ${options.invoiceDetails.currency}</p>
-        </div>
-
-        <div style="font-size: 9px; margin-bottom: 15px;">
-          <h2 style="font-size: 9px; font-weight: bold; margin-bottom: 5px;">Billed To:</h2>
-          <p style="margin: 2px 0;"><strong>Agent Code:</strong> ${options.companyInfo.agentCode}</p>
-          <p style="margin: 2px 0;"><strong>Agent Name:</strong> ${options.companyInfo.name}</p>
-          <p style="margin: 2px 0;"><strong>GSA:</strong> ${options.companyInfo.gsa}</p>
-        </div>
-
-        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-          <thead>
-            <tr>${headerCells}</tr>
-          </thead>
-          <tbody>
-            ${dataRows}
-            ${totalsRowHtml}
-          </tbody>
-        </table>
-      </div>
-    `;
-
-    const element = document.createElement('div');
-    element.innerHTML = htmlContent;
-    element.style.position = 'absolute';
-    element.style.left = '-9999px';
-    element.style.width = '1100px';
-    document.body.appendChild(element);
-
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: '#ffffff',
-    });
-
-    document.body.removeChild(element);
-
-    const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF({
       orientation: 'l',
       unit: 'mm',
       format: 'letter',
     });
 
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    const imgWidth = pdfWidth - 20;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let yPosition = 15;
 
-    let heightLeft = imgHeight;
-    let position = 10;
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Agent Invoice', 15, yPosition);
+    yPosition += 8;
 
-    pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-    heightLeft -= pdfHeight - 20;
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`Invoice No: ${options.invoiceDetails.invoiceNumber}`, 15, yPosition);
+    yPosition += 5;
+    pdf.text(`Invoice Date: ${options.invoiceDetails.invoiceDate}`, 15, yPosition);
+    yPosition += 5;
+    pdf.text(`Due Date: ${options.invoiceDetails.dueDate}`, 15, yPosition);
+    yPosition += 5;
+    pdf.text(`Currency: ${options.invoiceDetails.currency}`, 15, yPosition);
+    yPosition += 8;
 
-    while (heightLeft > 0) {
-      position = heightLeft - imgHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-      heightLeft -= pdfHeight - 20;
-    }
+    pdf.setFontSize(9);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Billed To:', 15, yPosition);
+    yPosition += 5;
+
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(9);
+    pdf.text(`Agent Code: ${options.companyInfo.agentCode}`, 15, yPosition);
+    yPosition += 4;
+    pdf.text(`Agent Name: ${options.companyInfo.name}`, 15, yPosition);
+    yPosition += 4;
+    pdf.text(`GSA: ${options.companyInfo.gsa}`, 15, yPosition);
+    yPosition += 8;
+
+    (pdf as any).autoTable({
+      head: [displayHeaders],
+      body: displayData,
+      foot: [totalsRow],
+      startY: yPosition,
+      margin: 15,
+      styles: {
+        fontSize: 7,
+        cellPadding: 2,
+        halign: 'center',
+        valign: 'middle',
+      },
+      headStyles: {
+        fillColor: [204, 204, 204],
+        textColor: [0, 0, 0],
+        fontStyle: 'bold',
+        halign: 'center',
+      },
+      footStyles: {
+        fillColor: [204, 204, 204],
+        textColor: [0, 0, 0],
+        fontStyle: 'bold',
+        halign: 'center',
+      },
+      columnStyles: {
+        0: { cellWidth: 30 },
+        1: { cellWidth: 30 },
+      },
+      didDrawPage: () => {
+        // Empty - just to use the autoTable plugin
+      },
+    });
 
     const pdfBlob = pdf.output('blob') as Blob;
     return pdfBlob;

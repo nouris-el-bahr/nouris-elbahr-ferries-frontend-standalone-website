@@ -233,7 +233,8 @@ export async function runSales(config: SalesConfig, files: File[]): Promise<Sale
   let invoicePdfBlob: Blob | null = null;
   let invoicePdfName = '';
   try {
-    if (shortResults.length > 0) {
+    // Only attempt PDF generation in browser environment
+    if (typeof document !== 'undefined' && shortResults.length > 0) {
       invoicePdfBlob = await generateInvoicePDF({
         companyInfo: {
           name: 'Nouris Ferries',
