@@ -66,6 +66,7 @@ function extractRowValues(row: Row): MappedValues {
 export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<Blob> {
   try {
     const { jsPDF } = await import('jspdf');
+    await import('jspdf-autotable');
 
     const headers = [
       'Code Rés.', 'Date Créa.', 'PAX HT', 'VEH HT', 'Cabin',
