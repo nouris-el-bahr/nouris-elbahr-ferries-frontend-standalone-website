@@ -70,6 +70,98 @@ function extractRowValues(row: Row): MappedValues {
 export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<Blob> {
   const { jsPDF } = await import('jspdf');
 
+  const pdf = new jsPDF({
+    orientation: 'l',
+    unit: 'mm',
+    format: 'letter',
+  });
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 12;
+
+  // Draw top right decorative bands
+  const bandWidth = 35;
+  const bandHeight = 4;
+  const bandStartX = pageWidth - bandWidth - 8;
+  const bandColor = [31, 41, 102]; // Dark blue
+
+  pdf.setFillColor(bandColor[0], bandColor[1], bandColor[2]);
+  pdf.rect(bandStartX, 8, bandWidth, bandHeight, 'F');
+  pdf.rect(bandStartX, 14, bandWidth, bandHeight, 'F');
+  pdf.rect(bandStartX, 20, bandWidth, bandHeight, 'F');
+
+  // Load and add logo (left side)
+  try {
+    const logoResponse = await fetch('/logo_zaatcha.png');
+    const logoBlob = await logoResponse.blob();
+    const logoUrl = URL.createObjectURL(logoBlob);
+    pdf.addImage(logoUrl, 'PNG', margin, 8, 30, 30);
+  } catch (error) {
+    console.warn('Logo not found');
+  }
+
+  // Load and add stamp (right side)
+  try {
+    const stampResponse = await fetch('/stamp_zaatcha.png');
+    const stampBlob = await stampResponse.blob();
+    const stampUrl = URL.createObjectURL(stampBlob);
+    pdf.addImage(stampUrl, 'PNG', pageWidth - 50, 8, 35, 35);
+  } catch (error) {
+    console.warn('Stamp not found');
+  }
+
+  // Center column: Invoice details
+  let yPos = 12;
+  pdf.setFontSize(16);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setTextColor(0, 0, 0);
+  pdf.text('Agent Invoice', 55, yPos);
+  yPos += 8;
+
+  pdf.setFontSize(9);
+  pdf.setFont('helvetica', 'normal');
+  pdf.text(`Invoice No: ${options.invoiceDetails.invoiceNumber}`, 55, yPos);
+  yPos += 4;
+  pdf.text(`Invoice Date: ${options.invoiceDetails.invoiceDate}`, 55, yPos);
+  yPos += 4;
+  pdf.text(`Due Date: ${options.invoiceDetails.dueDate}`, 55, yPos);
+  yPos += 4;
+  pdf.text(`Currency: ${options.invoiceDetails.currency}`, 55, yPos);
+  yPos += 6;
+
+  pdf.setFont('helvetica', 'bold');
+  pdf.text('Billed To:', 55, yPos);
+  yPos += 4;
+
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(9);
+  pdf.text(`Agent Code: ${options.companyInfo.agentCode}`, 55, yPos);
+  yPos += 4;
+  pdf.text(`Agent Name: ${options.companyInfo.name}`, 55, yPos);
+  yPos += 4;
+  pdf.text(`GSA: ${options.companyInfo.gsa}`, 55, yPos);
+
+  // Right column: Company info
+  pdf.setFontSize(10);
+  pdf.setFont('helvetica', 'bold');
+  pdf.text('Zaatcha Voyages Kouba', pageWidth - 55, 12);
+
+  pdf.setFontSize(8);
+  pdf.setFont('helvetica', 'normal');
+  const companyInfoLines = [
+    'Coop les communaux Villa N 40, Kouba, Algiers -ALGERIA-',
+    'Contact@Zaatchavoyages.com',
+    'www.zaatchavoyages.com',
+  ];
+
+  let infoY = 16;
+  for (const line of companyInfoLines) {
+    pdf.text(line, pageWidth - 55, infoY, { maxWidth: 50, align: 'left' });
+    infoY += 4;
+  }
+
+  // Table section
   const headers = [
     'Code Rés.', 'Date Créa.', 'PAX HT', 'VEH HT', 'Cabin',
     'Lit', 'Fauteuil', 'Animaux', 'Autres', 'Carb.Veh', 'Carb.Other',
@@ -169,54 +261,11 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
     formatNumber(totals['Commission']),
   ];
 
-  const pdf = new jsPDF({
-    orientation: 'l',
-    unit: 'mm',
-    format: 'letter',
-  });
-
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  const margin = 12;
   const colCount = displayHeaders.length;
   const colWidth = (pageWidth - 2 * margin) / colCount;
   const rowHeight = 5;
 
-  // Note: Background PDF cannot be used with jsPDF's addImage (only supports raster images).
-  // To use NourisT.pdf as background, convert it to PNG/JPG first.
-
-  let yPos = 18;
-
-  // Header content
-  pdf.setFontSize(13);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setTextColor(0, 0, 0);
-  pdf.text('Agent Invoice', margin, yPos);
-  yPos += 7;
-
-  pdf.setFontSize(9);
-  pdf.setFont('helvetica', 'normal');
-  pdf.text(`Invoice No: ${options.invoiceDetails.invoiceNumber}`, margin, yPos);
-  yPos += 4;
-  pdf.text(`Invoice Date: ${options.invoiceDetails.invoiceDate}`, margin, yPos);
-  yPos += 4;
-  pdf.text(`Due Date: ${options.invoiceDetails.dueDate}`, margin, yPos);
-  yPos += 4;
-  pdf.text(`Currency: ${options.invoiceDetails.currency}`, margin, yPos);
-  yPos += 5;
-
-  pdf.setFont('helvetica', 'bold');
-  pdf.text('Billed To:', margin, yPos);
-  yPos += 4;
-
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(9);
-  pdf.text(`Agent Code: ${options.companyInfo.agentCode}`, margin, yPos);
-  yPos += 4;
-  pdf.text(`Agent Name: ${options.companyInfo.name}`, margin, yPos);
-  yPos += 4;
-  pdf.text(`GSA: ${options.companyInfo.gsa}`, margin, yPos);
-  yPos += 6;
+  yPos = 48;
 
   const drawCell = (x: number, y: number, width: number, height: number, text: string, isBgGrey: boolean) => {
     pdf.setDrawColor(0, 0, 0);
