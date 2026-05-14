@@ -136,7 +136,6 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
   }
 
   const removeAutres = autresValues.every(v => v === 0);
-
   let displayHeaders = headers;
   let displayData = tableData;
 
@@ -176,20 +175,31 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
 
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
-  const margin = 10;
+  const margin = 12;
   const colCount = displayHeaders.length;
   const colWidth = (pageWidth - 2 * margin) / colCount;
   const rowHeight = 5;
 
-  let yPos = 15;
+  // Add background PDF
+  try {
+    const response = await fetch('/NourisT.pdf');
+    const arrayBuffer = await response.arrayBuffer();
+    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+    pdf.addImage(`data:application/pdf;base64,${base64}`, 'PDF', 0, 0, pageWidth, pageHeight);
+  } catch (error) {
+    console.warn('Background PDF not available, proceeding without background');
+  }
 
-  // Header
-  pdf.setFontSize(14);
+  let yPos = 18;
+
+  // Header content
+  pdf.setFontSize(13);
   pdf.setFont('helvetica', 'bold');
+  pdf.setTextColor(0, 0, 0);
   pdf.text('Agent Invoice', margin, yPos);
-  yPos += 8;
+  yPos += 7;
 
-  pdf.setFontSize(10);
+  pdf.setFontSize(9);
   pdf.setFont('helvetica', 'normal');
   pdf.text(`Invoice No: ${options.invoiceDetails.invoiceNumber}`, margin, yPos);
   yPos += 4;
@@ -198,9 +208,8 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
   pdf.text(`Due Date: ${options.invoiceDetails.dueDate}`, margin, yPos);
   yPos += 4;
   pdf.text(`Currency: ${options.invoiceDetails.currency}`, margin, yPos);
-  yPos += 6;
+  yPos += 5;
 
-  pdf.setFontSize(9);
   pdf.setFont('helvetica', 'bold');
   pdf.text('Billed To:', margin, yPos);
   yPos += 4;
@@ -214,49 +223,50 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
   pdf.text(`GSA: ${options.companyInfo.gsa}`, margin, yPos);
   yPos += 6;
 
-  const drawTableRow = (row: string[], isTotals: boolean = false) => {
+  const drawCell = (x: number, y: number, width: number, height: number, text: string, isBgGrey: boolean) => {
+    pdf.setDrawColor(0, 0, 0);
+    pdf.setLineWidth(0.3);
+
+    if (isBgGrey) {
+      pdf.setFillColor(200, 200, 200);
+    } else {
+      pdf.setFillColor(255, 255, 255);
+    }
+
+    pdf.rect(x, y, width, height, 'FD');
+
+    pdf.setTextColor(0, 0, 0);
+    pdf.setFontSize(6.5);
+    pdf.text(text, x + width / 2, y + height / 2 + 0.8, {
+      align: 'center',
+      maxWidth: width - 1,
+    });
+  };
+
+  const drawRow = (row: string[], isBgGrey: boolean = false) => {
     if (yPos + rowHeight > pageHeight - margin) {
       pdf.addPage();
       yPos = margin;
     }
 
-    if (isTotals) {
-      pdf.setFillColor(200, 200, 200);
-      pdf.setFont('helvetica', 'bold');
-    } else {
-      pdf.setFillColor(255, 255, 255);
-      pdf.setFont('helvetica', 'normal');
-    }
-
-    pdf.setTextColor(0, 0, 0);
-    pdf.setDrawColor(0, 0, 0);
-    pdf.setLineWidth(0.3);
-
     for (let i = 0; i < row.length; i++) {
       const xPos = margin + i * colWidth;
-      pdf.rect(xPos, yPos, colWidth, rowHeight, 'FD');
-      pdf.setFontSize(6.5);
-      pdf.text(String(row[i]), xPos + colWidth / 2, yPos + 2.8, {
-        align: 'center',
-        maxWidth: colWidth - 0.8,
-      });
+      drawCell(xPos, yPos, colWidth, rowHeight, row[i], isBgGrey);
     }
     yPos += rowHeight;
   };
 
-  // Draw header row
-  pdf.setFillColor(200, 200, 200);
+  // Draw table
   pdf.setFont('helvetica', 'bold');
-  drawTableRow(displayHeaders);
+  drawRow(displayHeaders, true);
 
-  // Draw data rows
   pdf.setFont('helvetica', 'normal');
   for (const row of displayData) {
-    drawTableRow(row);
+    drawRow(row, false);
   }
 
-  // Draw totals row
-  drawTableRow(totalsRow, true);
+  pdf.setFont('helvetica', 'bold');
+  drawRow(totalsRow, true);
 
   return pdf.output('blob') as Blob;
 }
