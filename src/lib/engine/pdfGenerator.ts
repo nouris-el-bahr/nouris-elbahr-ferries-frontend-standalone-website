@@ -36,12 +36,22 @@ interface MappedValues {
   'Frais passagers': number;
   'Frais hauteur': number;
   'Frais modification': number;
+  'Frais annulation': number;
   'Montant TTC': number;
   'Commission calculer agent': number;
 }
 
 function formatNumber(value: number): string {
-  return value.toFixed(2);
+  // Format number with spaces as thousand separators and 2 decimal places
+  const roundedValue = Math.round(value * 100) / 100;
+  const parts = roundedValue.toFixed(2).split('.');
+  const integerPart = parts[0];
+  const decimalPart = parts[1];
+  
+  // Add space as thousand separator
+  const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  
+  return `${formattedInteger}.${decimalPart}`;
 }
 
 function extractRowValues(row: Row): MappedValues {
@@ -62,6 +72,7 @@ function extractRowValues(row: Row): MappedValues {
     'Frais passagers': Number(row['Frais passagers'] || 0),
     'Frais hauteur': Number(row['Frais hauteur'] || 0),
     'Frais modification': Number(row['Frais modification'] || 0),
+    'Frais annulation': Number(row['Frais annulation'] || 0),
     'Montant TTC': Number(row['Montant TTC'] || 0),
     'Commission calculer agent': Number(row['Commission calculer agent'] || 0),
   };
@@ -81,8 +92,8 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
   const margin = 12;
 
   // Load and add logo (left corner) - preserve aspect ratio
-  let logoWidth = 25;
-  let logoHeight = 25;
+  let logoWidth = 15;
+  let logoHeight = 15;
   try {
     const logoResponse = await fetch('/logo_zaatcha.png');
     const logoBlob = await logoResponse.blob();
@@ -97,7 +108,7 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
     });
 
     const aspectRatio = img.width / img.height;
-    logoHeight = 35;
+    logoHeight = 20;
     logoWidth = logoHeight * aspectRatio;
 
     pdf.addImage(logoUrl, 'PNG', margin, 8, logoWidth, logoHeight);
@@ -106,25 +117,31 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
   }
 
   // Draw top right decorative bands extending to 1/3 of page width
-  const bandWidth = (pageWidth / 3) - margin; // Extends to approximately 1/3 of page
+  const bandWidth = (pageWidth / 2);
   const bandHeight = 4;
-  const bandStartX = pageWidth - bandWidth - margin;
-  const bandColor = [31, 41, 102]; // Dark blue
+  const bandStartX = pageWidth - bandWidth;
+  const bandColor = [31, 41, 102];
 
   pdf.setFillColor(bandColor[0], bandColor[1], bandColor[2]);
-  pdf.rect(bandStartX, 8, bandWidth, bandHeight, 'F');
-  pdf.rect(bandStartX, 14, bandWidth, bandHeight, 'F');
-  pdf.rect(bandStartX, 20, bandWidth, bandHeight, 'F');
+  const drawLeftRoundedRect = (x: number, y: number, w: number, h: number, r: number) => {
+    pdf.rect(x + r, y, w - r, h, 'F');
+    pdf.ellipse(x + r, y + r, r, r, 'F');
+    pdf.ellipse(x + r, y + h - r, r, r, 'F');
+  };
+
+  drawLeftRoundedRect(bandStartX, 8, bandWidth, bandHeight, 1.5);
+  drawLeftRoundedRect(bandStartX, 14, bandWidth, bandHeight, 1.5);
+  drawLeftRoundedRect(bandStartX, 20, bandWidth, bandHeight, 1.5);
 
   // Load and add stamp (centered below bands)
   try {
     const stampResponse = await fetch('/stamp_zaatcha.png');
     const stampBlob = await stampResponse.blob();
     const stampUrl = URL.createObjectURL(stampBlob);
-    const stampWidth = 30;
-    const stampHeight = 30;
-    const stampX = pageWidth / 2 - stampWidth / 2;
-    const stampY = 26;
+    const stampWidth = 41.6;
+    const stampHeight = 40;
+    const stampX = pageWidth / 2;
+    const stampY = 27;
     pdf.addImage(stampUrl, 'PNG', stampX, stampY, stampWidth, stampHeight);
   } catch (error) {
     console.warn('Stamp not found');
@@ -135,37 +152,37 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
   pdf.setFontSize(14);
   pdf.setFont('helvetica', 'bold');
   pdf.setTextColor(0, 0, 0);
-  pdf.text('Agent Invoice', margin + logoWidth + 5, yPos);
+  pdf.text('Facture Agent', margin + logoWidth + 5, yPos);
   yPos += 8;
 
   pdf.setFontSize(9);
   pdf.setFont('helvetica', 'normal');
-  pdf.text(`Invoice No: ${options.invoiceDetails.invoiceNumber}`, margin + logoWidth + 5, yPos);
+  pdf.text(`Facture No: ${options.invoiceDetails.invoiceNumber}`, margin + logoWidth + 5, yPos);
   yPos += 4;
-  pdf.text(`Invoice Date: ${options.invoiceDetails.invoiceDate}`, margin + logoWidth + 5, yPos);
+  pdf.text(`Date de Facture: ${options.invoiceDetails.invoiceDate}`, margin + logoWidth + 5, yPos);
   yPos += 4;
-  pdf.text(`Due Date: ${options.invoiceDetails.dueDate}`, margin + logoWidth + 5, yPos);
+  pdf.text(`Date d'Échéance: ${options.invoiceDetails.dueDate}`, margin + logoWidth + 5, yPos);
   yPos += 4;
-  pdf.text(`Currency: ${options.invoiceDetails.currency}`, margin + logoWidth + 5, yPos);
+  pdf.text(`Devise: ${options.invoiceDetails.currency}`, margin + logoWidth + 5, yPos);
   yPos += 6;
 
   pdf.setFont('helvetica', 'bold');
-  pdf.text('Billed To:', margin + logoWidth + 5, yPos);
+  pdf.text('Facturé à:', margin + logoWidth + 5, yPos);
   yPos += 4;
 
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(9);
-  pdf.text(`Agent Code: ${options.companyInfo.agentCode}`, margin + logoWidth + 5, yPos);
+  pdf.text(`Code Agent: ${options.companyInfo.agentCode}`, margin + logoWidth + 5, yPos);
   yPos += 4;
-  pdf.text(`Agent Name: ${options.companyInfo.name}`, margin + logoWidth + 5, yPos);
+  pdf.text(`Nom de l'Agent: ${options.companyInfo.name}`, margin + logoWidth + 5, yPos);
   yPos += 4;
   pdf.text(`GSA: ${options.companyInfo.gsa}`, margin + logoWidth + 5, yPos);
 
   // Right column: Company info (right of stamp)
-  const rightColX = pageWidth / 2 + 25;
+  const rightColX = pageWidth / 2 + 45;
   pdf.setFontSize(10);
   pdf.setFont('helvetica', 'bold');
-  pdf.text('Zaatcha Voyages Kouba', rightColX, 28, { align: 'left' });
+  pdf.text('Zaatcha Voyages Kouba', rightColX, 40, { align: 'left' });
 
   pdf.setFontSize(8);
   pdf.setFont('helvetica', 'normal');
@@ -175,41 +192,37 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
     'www.zaatchavoyages.com',
   ];
 
-  let infoY = 32;
+  let infoY = 45;
   for (const line of companyInfoLines) {
-    pdf.text(line, rightColX, infoY, { maxWidth: 60, align: 'left' });
+    pdf.text(line, rightColX, infoY, { maxWidth: 80, align: 'left' });
     infoY += 4;
   }
 
   // Table section
   const headers = [
     'Code Rés.', 'Date Créa.', 'PAX HT', 'VEH HT', 'Cabin',
-    'Lit', 'Fauteuil', 'Animaux', 'Autres', 'Carb.Veh', 'Carb.Other',
-    'Frais PAX', 'Frais Haut.', 'Frais Mod.', 'TTC', 'Devise', 'Commission'
+    'Lit', 'Fauteuil', 'Animaux', 'Autres', 'Carb.Veh', 'Carb',
+    'Frais PAX', 'Frais Haut.', 'Frais Mod.', 'Frais Ann.', 'TTC', 'Commission', 'Devise'
   ];
 
   const autresValues: number[] = [];
-  const tableData: string[][] = [];
-  const totals: Record<string, number> = {
-    'PAX HT': 0,
-    'VEH HT': 0,
-    'Cabin': 0,
-    'Lit': 0,
-    'Fauteuil': 0,
-    'Animaux': 0,
-    'Autres': 0,
-    'Carb.Veh': 0,
-    'Carb.Other': 0,
-    'Frais PAX': 0,
-    'Frais Haut.': 0,
-    'Frais Mod.': 0,
+  const validTableData: string[][] = [];
+  const canceledTableData: string[][] = [];
+
+  const createTotalsObject = () => ({
     'TTC': 0,
     'Commission': 0,
-  };
+  });
+
+  const validTotals = createTotalsObject();
+  const canceledTotals = createTotalsObject();
 
   for (const row of options.bookingsData) {
     const values = extractRowValues(row);
     autresValues.push(values['Montant HT Autres']);
+
+    const statut = (row['Statut reservation'] || '').toUpperCase();
+    const isCanceled = statut === 'CAN';
 
     const tableRow = [
       values['Code réservation'],
@@ -226,68 +239,122 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
       formatNumber(values['Frais passagers']),
       formatNumber(values['Frais hauteur']),
       formatNumber(values['Frais modification']),
+      formatNumber(values['Frais annulation']),
       formatNumber(values['Montant TTC']),
-      row['Devise'] || options.invoiceDetails.currency,
       formatNumber(values['Commission calculer agent']),
+      row['Devise'] || options.invoiceDetails.currency,
     ];
 
-    tableData.push(tableRow);
+    const targetData = isCanceled ? canceledTableData : validTableData;
+    const targetTotals = isCanceled ? canceledTotals : validTotals;
 
-    totals['PAX HT'] += values['Montant HT Passagers'];
-    totals['VEH HT'] += values['Montant HT Véhicule'];
-    totals['Cabin'] += values['Montant HT Installation Cabin'];
-    totals['Lit'] += values['Montant HT Installation Lit'];
-    totals['Fauteuil'] += values['Montant HT Installation Fauteuil'];
-    totals['Animaux'] += values['Montant HT Animaux et extra'];
-    totals['Autres'] += values['Montant HT Autres'];
-    totals['Carb.Veh'] += values['Frais carburant véhicule'];
-    totals['Carb.Other'] += values['Frais carburant'];
-    totals['Frais PAX'] += values['Frais passagers'];
-    totals['Frais Haut.'] += values['Frais hauteur'];
-    totals['Frais Mod.'] += values['Frais modification'];
-    totals['TTC'] += values['Montant TTC'];
-    totals['Commission'] += values['Commission calculer agent'];
+    targetData.push(tableRow);
+
+    targetTotals['TTC'] += values['Montant TTC'];
+    targetTotals['Commission'] += values['Commission calculer agent'];
   }
 
   const removeAutres = autresValues.every(v => v === 0);
   let displayHeaders = headers;
-  let displayData = tableData;
 
   if (removeAutres) {
     const autresIdx = headers.indexOf('Autres');
     if (autresIdx !== -1) {
       displayHeaders = headers.filter((_, i) => i !== autresIdx);
-      displayData = displayData.map(row => row.filter((_, i) => i !== autresIdx));
     }
   }
 
-  const totalsRow = [
-    'TOTALS',
-    '',
-    formatNumber(totals['PAX HT']),
-    formatNumber(totals['VEH HT']),
-    formatNumber(totals['Cabin']),
-    formatNumber(totals['Lit']),
-    formatNumber(totals['Fauteuil']),
-    formatNumber(totals['Animaux']),
-    ...(removeAutres ? [] : [formatNumber(totals['Autres'])]),
-    formatNumber(totals['Carb.Veh']),
-    formatNumber(totals['Carb.Other']),
-    formatNumber(totals['Frais PAX']),
-    formatNumber(totals['Frais Haut.']),
-    formatNumber(totals['Frais Mod.']),
-    formatNumber(totals['TTC']),
-    options.invoiceDetails.currency,
-    formatNumber(totals['Commission']),
-  ];
+  const createTotalsRow = (totals: Record<string, number>, label: string = 'TOTAUX') => {
+    // Create row with empty strings for all cells
+    const regularRow = new Array(displayHeaders.length).fill('');
+    
+    // Find indices for TTC and Commission
+    const ttcIndex = displayHeaders.indexOf('TTC');
+    const commissionIndex = displayHeaders.indexOf('Commission');
+    
+    // Find a good position for TOTAUX label (two cells before TTC)
+    // Let's put it spanning across two cells: the 'Frais Ann.' column and one column before it
+    const indexBeforeTTC = ttcIndex - 1;
+    const startSpanIndex = Math.max(0, indexBeforeTTC - 1);
+    
+    // Set the label at the start of the span
+    regularRow[startSpanIndex] = label;
+    
+    // Set TTC and Commission values
+    if (ttcIndex !== -1) {
+      regularRow[ttcIndex] = formatNumber(totals['TTC']);
+    }
+    if (commissionIndex !== -1) {
+      regularRow[commissionIndex] = formatNumber(totals['Commission']);
+    }
+    
+    // Return as special object to indicate it should span 2 cells
+    return { type: 'spanning', data: regularRow, spanCount: 2, startIndex: startSpanIndex };
+  };
 
   const colCount = displayHeaders.length;
-  const colWidth = (pageWidth - 2 * margin) / colCount;
+  const baseColWidth = (pageWidth - 2 * margin) / colCount;
+  
+  // Make TTC and Commission columns 20% bigger, Devise column 30% smaller
+  const ttcIndex = displayHeaders.indexOf('TTC');
+  const commissionIndex = displayHeaders.indexOf('Commission');
+  const deviseIndex = displayHeaders.indexOf('Devise');
+  
+  // Width adjustments
+  const ttcIncrease = baseColWidth * 0.2; // TTC gets 20% wider
+  const commissionIncrease = baseColWidth * 0.2; // Commission also gets 20% wider
+  const deviseDecrease = baseColWidth * 0.3; // Devise gets 30% narrower
+  const totalIncrease = ttcIncrease + commissionIncrease;
+  const netChange = totalIncrease + deviseDecrease;
+  
+  // Count columns that need adjustment
+  const widenColumns = [ttcIndex, commissionIndex].filter(idx => idx !== -1);
+  const otherColumnsCount = colCount - widenColumns.length - (deviseIndex !== -1 ? 1 : 0);
+  
+  const getColWidth = (index: number): number => {
+    if (index === ttcIndex) {
+      return baseColWidth + ttcIncrease;
+    }
+    if (index === commissionIndex) {
+      return baseColWidth + commissionIncrease;
+    }
+    if (index === deviseIndex) {
+      return baseColWidth - deviseDecrease;
+    }
+    // For other columns, slightly adjust to maintain total width
+    if (otherColumnsCount > 0) {
+      return baseColWidth - (netChange / otherColumnsCount);
+    }
+    return baseColWidth;
+  };
+
+  const getColX = (index: number): number => {
+    let x = margin;
+    for (let i = 0; i < index; i++) {
+      x += getColWidth(i);
+    }
+    return x;
+  };
+
   const rowHeight = 5;
 
+  // Start table section after company info
   yPos = 70;
 
-  const drawCell = (x: number, y: number, width: number, height: number, text: string, isBgGrey: boolean) => {
+  const shouldAlignRight = (header: string): boolean => {
+    const centerAlignHeaders = ['Code Rés.', 'Date Créa.', 'Devise'];
+    return !centerAlignHeaders.includes(header);
+  };
+
+  const drawCell = (
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    text: string,
+    isBgGrey: boolean,
+    align: 'left' | 'center' | 'right' = 'center'
+  ) => {
     pdf.setDrawColor(0, 0, 0);
     pdf.setLineWidth(0.3);
 
@@ -301,36 +368,156 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
 
     pdf.setTextColor(0, 0, 0);
     pdf.setFontSize(6.5);
-    pdf.text(text, x + width / 2, y + height / 2 + 0.8, {
-      align: 'center',
+
+    let textX = x + width / 2;
+    if (align === 'right') {
+      textX = x + width - 0.5;
+    } else if (align === 'left') {
+      textX = x + 0.5;
+    }
+
+    pdf.text(text, textX, y + height / 2 + 0.8, {
+      align: align,
       maxWidth: width - 1,
     });
   };
 
-  const drawRow = (row: string[], isBgGrey: boolean = false) => {
+  const drawRow = (row: any, isBgGrey: boolean = false) => {
     if (yPos + rowHeight > pageHeight - margin) {
       pdf.addPage();
       yPos = margin;
+      // Redraw headers on new page if needed
+      pdf.setFont('helvetica', 'bold');
+      drawRow(displayHeaders, true);
+      pdf.setFont('helvetica', 'normal');
     }
 
-    for (let i = 0; i < row.length; i++) {
-      const xPos = margin + i * colWidth;
-      drawCell(xPos, yPos, colWidth, rowHeight, row[i], isBgGrey);
+    const boldColumns = ['Code Rés.', 'Date Créa.', 'Devise', 'TTC', 'Commission'];
+    
+    // Check if this is a spanning row
+    const isSpanningRow = row.type === 'spanning';
+    const rowData = isSpanningRow ? row.data : row;
+    const spanCount = isSpanningRow ? row.spanCount : 1;
+    const startSpanIndex = isSpanningRow ? (row.startIndex || 0) : 0;
+
+    for (let i = 0; i < rowData.length; i++) {
+      // Handle spanning for the TOTAUX label at the specified start index
+      if (isSpanningRow && i === startSpanIndex && rowData[i] !== '') {
+        // Calculate combined width of the cells to span
+        let combinedWidth = 0;
+        for (let j = 0; j < spanCount; j++) {
+          combinedWidth += getColWidth(startSpanIndex + j);
+        }
+        
+        const xPos = getColX(startSpanIndex);
+        
+        // Draw single cell spanning multiple columns
+        pdf.setDrawColor(0, 0, 0);
+        pdf.setLineWidth(0.3);
+        
+        if (isBgGrey) {
+          pdf.setFillColor(200, 200, 200);
+        } else {
+          pdf.setFillColor(255, 255, 255);
+        }
+        
+        pdf.rect(xPos, yPos, combinedWidth, rowHeight, 'FD');
+        
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFontSize(6.5);
+        
+        // Center the text in the spanned cell
+        pdf.text(rowData[i], xPos + combinedWidth / 2, yPos + rowHeight / 2 + 0.8, {
+          align: 'center',
+          maxWidth: combinedWidth - 1,
+        });
+        
+        // Skip the next (spanCount - 1) cells since they're merged into this one
+        i += spanCount - 1;
+        continue;
+      }
+      
+      // Skip rendering if this cell is part of the spanned area (not the first cell)
+      if (isSpanningRow && i > startSpanIndex && i < startSpanIndex + spanCount) {
+        continue;
+      }
+      
+      // Skip rendering empty cells in spanning row
+      if (isSpanningRow && rowData[i] === '') {
+        continue;
+      }
+      
+      // For normal cells (including TTC and Commission), render normally
+      let xPos = getColX(i);
+      let colWidth = getColWidth(i);
+      
+      // Normal cell rendering
+      let align: 'left' | 'center' | 'right' = 'center';
+      if (!isBgGrey) {
+        align = shouldAlignRight(displayHeaders[i]) ? 'right' : 'center';
+      }
+
+      const isBoldColumn = boldColumns.includes(displayHeaders[i]);
+      if (!isBgGrey && isBoldColumn) {
+        pdf.setFont('helvetica', 'bold');
+      }
+      drawCell(xPos, yPos, colWidth, rowHeight, rowData[i], isBgGrey, align);
+      if (!isBgGrey && isBoldColumn) {
+        pdf.setFont('helvetica', 'normal');
+      }
     }
     yPos += rowHeight;
   };
 
-  // Draw table
-  pdf.setFont('helvetica', 'bold');
-  drawRow(displayHeaders, true);
+  const drawSection = (sectionData: string[][], sectionTotals: Record<string, number>, sectionTitle: string, isFirstSection: boolean = true) => {
+    if (sectionData.length === 0) return;
 
-  pdf.setFont('helvetica', 'normal');
-  for (const row of displayData) {
-    drawRow(row, false);
-  }
+    // Add spacing before section (except for first section)
+    if (!isFirstSection) {
+      yPos += 8; // Add space between sections
+      
+      // Check if we need a new page for the next section
+      if (yPos > pageHeight - 30) {
+        pdf.addPage();
+        yPos = margin;
+      }
+    }
 
-  pdf.setFont('helvetica', 'bold');
-  drawRow(totalsRow, true);
+    // Draw section title
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(sectionTitle, margin, yPos);
+    yPos += 6; // Space after title
+
+    // Prepare display data (remove Autres column if needed)
+    const displayData = removeAutres
+      ? sectionData.map(row => row.filter((_, i) => headers[i] !== 'Autres'))
+      : sectionData;
+
+    // Draw header row
+    pdf.setFont('helvetica', 'bold');
+    drawRow(displayHeaders, true);
+
+    // Draw data rows
+    pdf.setFont('helvetica', 'normal');
+    for (const row of displayData) {
+      drawRow(row, false);
+    }
+
+    // Draw totals row
+    pdf.setFont('helvetica', 'bold');
+    const totalsRow = createTotalsRow(sectionTotals, 'TOTAUX');
+    drawRow(totalsRow, true);
+    
+    // Add a small space after the totals row
+    yPos += 2;
+  };
+
+  // Draw valid reservations section (first section)
+  drawSection(validTableData, validTotals, 'Réservations Valides', true);
+
+  // Draw canceled reservations section (second section with spacing)
+  drawSection(canceledTableData, canceledTotals, 'Réservations Annulées', false);
 
   return pdf.output('blob') as Blob;
 }
