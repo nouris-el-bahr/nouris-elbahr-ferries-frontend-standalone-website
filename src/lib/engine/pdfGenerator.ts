@@ -15,10 +15,22 @@ interface CompanyInfo {
   gsa: string;
 }
 
+interface GSACompanyInfo {
+  name: string;
+  address?: string;
+  email?: string;
+  website?: string;
+  companyLegal?: string;
+}
+
 interface PDFGeneratorOptions {
   companyInfo: CompanyInfo;
   invoiceDetails: InvoiceDetails;
   bookingsData: Row[];
+  invoiceType?: 'GSA' | 'Agence';
+  issuingCompany?: GSACompanyInfo;
+  logoPath?: string;
+  stampPath?: string;
 }
 
 interface MappedValues {
@@ -94,8 +106,9 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
   // Load and add logo (left corner) - preserve aspect ratio
   let logoWidth = 15;
   let logoHeight = 15;
+  const logoPath = options.logoPath || '/logo_zaatcha.png';
   try {
-    const logoResponse = await fetch('/logo_zaatcha.png');
+    const logoResponse = await fetch(logoPath);
     const logoBlob = await logoResponse.blob();
     const logoUrl = URL.createObjectURL(logoBlob);
 
@@ -113,7 +126,7 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
 
     pdf.addImage(logoUrl, 'PNG', margin, 8, logoWidth, logoHeight);
   } catch (error) {
-    console.warn('Logo not found');
+    console.warn(`Logo not found: ${logoPath}`);
   }
 
   // Draw top right decorative bands extending to 1/3 of page width
@@ -134,8 +147,9 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
   drawLeftRoundedRect(bandStartX, 20, bandWidth, bandHeight, 1.5);
 
   // Load and add stamp (centered below bands)
+  const stampPath = options.stampPath || '/stamp_zaatcha.png';
   try {
-    const stampResponse = await fetch('/stamp_zaatcha.png');
+    const stampResponse = await fetch(stampPath);
     const stampBlob = await stampResponse.blob();
     const stampUrl = URL.createObjectURL(stampBlob);
     const stampWidth = 41.6;
@@ -144,7 +158,7 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
     const stampY = 27;
     pdf.addImage(stampUrl, 'PNG', stampX, stampY, stampWidth, stampHeight);
   } catch (error) {
-    console.warn('Stamp not found');
+    console.warn(`Stamp not found: ${stampPath}`);
   }
 
   // Left column: Invoice title with logo
@@ -182,15 +196,34 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
   const rightColX = pageWidth / 2 + 45;
   pdf.setFontSize(10);
   pdf.setFont('helvetica', 'bold');
-  pdf.text('Zaatcha Voyages Kouba', rightColX, 40, { align: 'left' });
+
+  const companyName = options.issuingCompany?.name || 'Zaatcha Voyages Kouba';
+  pdf.text(companyName, rightColX, 40, { align: 'left' });
 
   pdf.setFontSize(8);
   pdf.setFont('helvetica', 'normal');
-  const companyInfoLines = [
-    'Coop les communaux Villa N 40, Kouba, Algiers -ALGERIA-',
-    'Contact@Zaatchavoyages.com',
-    'www.zaatchavoyages.com',
-  ];
+  const companyInfoLines = [];
+
+  if (options.issuingCompany) {
+    if (options.issuingCompany.companyLegal) {
+      companyInfoLines.push(options.issuingCompany.companyLegal);
+    }
+    if (options.issuingCompany.address) {
+      companyInfoLines.push(options.issuingCompany.address);
+    }
+    if (options.issuingCompany.email) {
+      companyInfoLines.push(options.issuingCompany.email);
+    }
+    if (options.issuingCompany.website) {
+      companyInfoLines.push(options.issuingCompany.website);
+    }
+  } else {
+    companyInfoLines.push(
+      'Coop les communaux Villa N 40, Kouba, Algiers -ALGERIA-',
+      'Contact@Zaatchavoyages.com',
+      'www.zaatchavoyages.com'
+    );
+  }
 
   let infoY = 45;
   for (const line of companyInfoLines) {

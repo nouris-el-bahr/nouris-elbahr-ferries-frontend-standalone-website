@@ -8,6 +8,7 @@ import {
 import { parseAnyFile, generateXlsxBlob } from './fileLoaders';
 import { groupBy, sumBy, pivotSum, dropZeroCols } from './pivotUtils';
 import { generateInvoicePDF } from './pdfGenerator';
+import gsaData from './gsaData.json';
 
 // ── Constants ──────────────────────────────────────────────────────────
 
@@ -84,6 +85,7 @@ export interface SalesConfig {
   mode: 'short' | 'detailed';
   onlyCheckedIn: boolean;
   splitByDeparture?: boolean;
+  invoiceType?: 'GSA' | 'Agence';
 }
 
 export interface SalesRunResult {
@@ -223,39 +225,88 @@ export async function runSales(config: SalesConfig, files: File[]): Promise<Sale
     }
   }
 
-  // 10. Generate Invoice PDFs (one per GSA from short report data)
+  // 10. Generate Invoice PDFs (one per GSA + currency combination)
   const salesInvoicePdfs: Array<{ blob: Blob; name: string }> = [];
+  const invoiceType = config.invoiceType || 'Agence';
 
   if (shortResults.length > 0) {
     const gsaGrouped = groupBy(shortResults, 'GSA agent' as any);
 
     for (const [gsaName, gsaRows] of gsaGrouped) {
-      try {
-        const gsaLabel = gsaName || 'Unknown';
-        const blob = await generateInvoicePDF({
-          companyInfo: {
-            name: 'Nouris Ferries',
-            agentCode: gsaRows[0]['Code agent'] || 'N/A',
-            gsa: gsaLabel,
-          },
-          invoiceDetails: {
-            invoiceNumber: `${config.downloadDate.replace(/-/g, '')}00001`,
-            invoiceDate: config.downloadDate,
-            dueDate: new Date(new Date(config.downloadDate).getTime() + 15 * 24 * 60 * 60 * 1000)
-              .toISOString()
-              .split('T')[0],
-            currency: gsaRows[0]['Devise'] || 'DZD',
-          },
-          bookingsData: gsaRows,
-        });
+      const gsaLabel = gsaName || 'Unknown';
+      const currencyGrouped = groupBy(gsaRows, 'Devise' as any);
 
-        const safeName = gsaLabel.replace(/[^a-zA-Z0-9_-]/g, '_');
-        salesInvoicePdfs.push({
-          blob,
-          name: `${generateId()}_dl${config.downloadDate}_cr${dateRange}_SalesInvoice_${safeName}.pdf`,
-        });
-      } catch (error) {
-        console.error(`Error generating PDF for GSA ${gsaName}:`, error);
+      for (const [currency, currencyRows] of currencyGrouped) {
+        try {
+          const currencyLabel = currency || 'DZD';
+
+          // Determine company info based on invoice type
+          let issuingCompany = undefined;
+          let logoPath = '/logo_zaatcha.png';
+          let stampPath = '/stamp_zaatcha.png';
+
+          if (invoiceType === 'GSA') {
+            // GSA mode: Nouris invoices the GSA
+            const gsaInfo = gsaData[gsaName as keyof typeof gsaData];
+            if (gsaInfo && gsaInfo.id !== 'Nouris') {
+              issuingCompany = {
+                name: gsaInfo.name,
+                address: gsaInfo.address,
+                email: gsaInfo.email,
+                website: gsaInfo.website,
+              };
+              logoPath = `/logo_${gsaInfo.id.toLowerCase()}.png`;
+              stampPath = `/stamp_${gsaInfo.id.toLowerCase()}.png`;
+            } else {
+              // Use Nouris for internal GSAs
+              issuingCompany = {
+                name: 'Société de Transport Maritime de Voyageurs',
+                companyLegal: 'SARL NOURIS ELBAHR MM',
+                address: 'Coopérative des Communaux N° 40, Kouba, Alger',
+                website: 'https://www.nouriselbahrferries.com/',
+              };
+              logoPath = '/logo_nouris.png';
+              stampPath = '/stamp_nouris.png';
+            }
+          } else {
+            // Agence mode: GSA invoices agencies - use GSA branding
+            const gsaInfo = gsaData[gsaName as keyof typeof gsaData];
+            if (gsaInfo) {
+              logoPath = `/logo_${gsaInfo.id.toLowerCase()}.png`;
+              stampPath = `/stamp_${gsaInfo.id.toLowerCase()}.png`;
+            }
+          }
+
+          const blob = await generateInvoicePDF({
+            companyInfo: {
+              name: invoiceType === 'GSA' ? gsaLabel : 'Nouris Ferries',
+              agentCode: currencyRows[0]['Code agent'] || 'N/A',
+              gsa: invoiceType === 'GSA' ? gsaLabel : currencyRows[0]['GSA agent'] || 'N/A',
+            },
+            invoiceDetails: {
+              invoiceNumber: `${config.downloadDate.replace(/-/g, '')}00001`,
+              invoiceDate: config.downloadDate,
+              dueDate: new Date(new Date(config.downloadDate).getTime() + 15 * 24 * 60 * 60 * 1000)
+                .toISOString()
+                .split('T')[0],
+              currency: currencyLabel,
+            },
+            bookingsData: currencyRows,
+            invoiceType,
+            issuingCompany,
+            logoPath,
+            stampPath,
+          });
+
+          const safeName = gsaLabel.replace(/[^a-zA-Z0-9_-]/g, '_');
+          const typeLabel = invoiceType === 'GSA' ? 'GSA' : 'Agence';
+          salesInvoicePdfs.push({
+            blob,
+            name: `${generateId()}_dl${config.downloadDate}_cr${dateRange}_SalesInvoice_${safeName}_${typeLabel}_${currencyLabel}.pdf`,
+          });
+        } catch (error) {
+          console.error(`Error generating PDF for GSA ${gsaName} / Currency ${currency}:`, error);
+        }
       }
     }
   }

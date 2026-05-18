@@ -32,6 +32,7 @@ export default function SalesPage() {
   const [salesFolderFiles, setSalesFolderFiles] = useState<
     File[] | undefined
   >();
+  const [invoiceType, setInvoiceType] = useState<"GSA" | "Agence">("Agence");
   const [result, setResult] = useState<any>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -63,6 +64,7 @@ export default function SalesPage() {
         mode: sales.mode as "short" | "detailed",
         onlyCheckedIn: sales.onlyCheckedIn,
         splitByDeparture: sales.splitByDeparture,
+        invoiceType,
       };
 
       const res = await dispatch(
@@ -187,6 +189,43 @@ export default function SalesPage() {
                 dispatch(setSplitByDeparture(checked))
               }
             />
+
+            {/* Invoice Type Selection */}
+            <Card className="mb-6">
+              <div className="px-6 py-4">
+                <h2 className="font-semibold text-nouris-navy mb-4">Type de Facture</h2>
+                <div className="space-y-3">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="invoiceType"
+                      value="Agence"
+                      checked={invoiceType === "Agence"}
+                      onChange={(e) => setInvoiceType(e.target.value as "Agence" | "GSA")}
+                      disabled={sales.running}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-sm">
+                      <strong>Facture Agence</strong> - GSA facture ses agences
+                    </span>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="invoiceType"
+                      value="GSA"
+                      checked={invoiceType === "GSA"}
+                      onChange={(e) => setInvoiceType(e.target.value as "Agence" | "GSA")}
+                      disabled={sales.running}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-sm">
+                      <strong>Facture GSA</strong> - Nouris facture ses GSAs
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </Card>
 
             {/* Run Button */}
             <Card className="mb-6">

@@ -1,0 +1,39 @@
+{
+  "Zaatcha": {
+    "id": "Zaatcha",
+    "name": "Zaatcha Voyages Kouba",
+    "address": "Coop les communaux Villa N 40, Kouba, Algiers -ALGERIA-",
+    "email": "Contact@Zaatchavoyages.com",
+    "website": "www.zaatchavoyages.com",
+    "logo": "logo_zaatcha.png",
+    "stamp": "stamp_zaatcha.png"
+  },
+  "NVM": {
+    "id": "NVM",
+    "name": "NaviMed",
+    "address": "France",
+    "email": "",
+    "website": "https://www.navimed.fr/",
+    "logo": "logo_nvm.png",
+    "stamp": "stamp_nvm.png"
+  },
+  "OPS": {
+    "id": "OPS",
+    "name": "Ocean Port Shipping",
+    "address": "Ocean Port Shipping",
+    "email": "",
+    "website": "https://oceanportsshipping.com/#ocean",
+    "logo": "logo_ops.png",
+    "stamp": "stamp_ops.png"
+  },
+  "Nouris": {
+    "id": "Nouris",
+    "name": "Société de Transport Maritime de Voyageurs",
+    "companyLegal": "SARL NOURIS ELBAHR MM",
+    "address": "Coopérative des Communaux N° 40, Kouba, Alger",
+    "email": "",
+    "website": "https://www.nouriselbahrferries.com/",
+    "logo": "logo_nouris.png",
+    "stamp": "stamp_nouris.png"
+  }
+}
