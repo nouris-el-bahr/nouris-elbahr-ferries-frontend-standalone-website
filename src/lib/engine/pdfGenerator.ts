@@ -29,6 +29,7 @@ interface PDFGeneratorOptions {
   bookingsData: Row[];
   invoiceType?: 'GSA' | 'Agence';
   issuingCompany?: GSACompanyInfo;
+  billedGSA?: GSACompanyInfo;
   logoPath?: string;
   stampPath?: string;
 }
@@ -186,11 +187,29 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
 
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(9);
-  pdf.text(`Code Agent: ${options.companyInfo.agentCode}`, margin + logoWidth + 5, yPos);
-  yPos += 4;
-  pdf.text(`Nom de l'Agent: ${options.companyInfo.name}`, margin + logoWidth + 5, yPos);
-  yPos += 4;
-  pdf.text(`GSA: ${options.companyInfo.gsa}`, margin + logoWidth + 5, yPos);
+
+  if (options.billedGSA) {
+    pdf.text(`Nom: ${options.billedGSA.name}`, margin + logoWidth + 5, yPos);
+    yPos += 4;
+    if (options.billedGSA.address) {
+      pdf.text(`Adresse: ${options.billedGSA.address}`, margin + logoWidth + 5, yPos);
+      yPos += 4;
+    }
+    if (options.billedGSA.email) {
+      pdf.text(`Email: ${options.billedGSA.email}`, margin + logoWidth + 5, yPos);
+      yPos += 4;
+    }
+    if (options.billedGSA.website) {
+      pdf.text(`Site: ${options.billedGSA.website}`, margin + logoWidth + 5, yPos);
+      yPos += 4;
+    }
+  } else {
+    pdf.text(`Code Agent: ${options.companyInfo.agentCode}`, margin + logoWidth + 5, yPos);
+    yPos += 4;
+    pdf.text(`Nom de l'Agent: ${options.companyInfo.name}`, margin + logoWidth + 5, yPos);
+    yPos += 4;
+    pdf.text(`GSA: ${options.companyInfo.gsa}`, margin + logoWidth + 5, yPos);
+  }
 
   // Right column: Company info (right of stamp)
   const rightColX = pageWidth / 2 + 45;

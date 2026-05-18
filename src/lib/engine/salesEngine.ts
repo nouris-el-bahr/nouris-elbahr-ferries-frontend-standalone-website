@@ -242,6 +242,7 @@ export async function runSales(config: SalesConfig, files: File[]): Promise<Sale
 
           // Determine company info based on invoice type
           let issuingCompany = undefined;
+          let billedGSA = undefined;
           let logoPath = '/logo_nouris.png';
           let stampPath = '/stamp_nouris.png';
 
@@ -254,6 +255,16 @@ export async function runSales(config: SalesConfig, files: File[]): Promise<Sale
               email: '',
               website: 'https://www.nouriselbahrferries.com/',
             };
+            // Get GSA info from gsaData
+            const gsaInfo = gsaData[gsaName as keyof typeof gsaData];
+            if (gsaInfo) {
+              billedGSA = {
+                name: gsaInfo.name,
+                address: gsaInfo.address,
+                email: gsaInfo.email,
+                website: gsaInfo.website,
+              };
+            }
           } else {
             // Agence mode: GSA invoices agencies - use GSA branding
             const gsaInfo = gsaData[gsaName as keyof typeof gsaData];
@@ -286,6 +297,7 @@ export async function runSales(config: SalesConfig, files: File[]): Promise<Sale
             bookingsData: currencyRows,
             invoiceType,
             issuingCompany,
+            billedGSA,
             logoPath,
             stampPath,
           });
