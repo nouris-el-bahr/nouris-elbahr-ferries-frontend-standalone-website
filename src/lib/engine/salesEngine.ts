@@ -101,8 +101,7 @@ export interface SalesRunResult {
   salesDetailedName: string;
   salesSplitByDepartureBlob: Blob | null;
   salesSplitByDepartureName: string;
-  salesInvoicePdfBlob: Blob | null;
-  salesInvoicePdfName: string;
+  salesInvoicePdfs: Array<{ blob: Blob; name: string }>;
 }
 
 interface ShortResult {
@@ -131,8 +130,6 @@ export async function runSales(config: SalesConfig, files: File[]): Promise<Sale
   const bookingGrouped = groupBy(filtered, 'Booking code' as any);
   const shortResults: ShortResult[] = [];
   const detailedResults: ShortResult[] = [];
-  const dateMin = new Date('9999-12-31');
-  const dateMax = new Date('1900-01-01');
 
   for (const [, bookingRows] of bookingGrouped) {
     const result = extractBookingData(bookingRows, config.vatSuffix, agencies);
@@ -141,18 +138,15 @@ export async function runSales(config: SalesConfig, files: File[]): Promise<Sale
     if (config.mode === 'detailed') {
       detailedResults.push(result.detailedResult!);
     }
-
-    // Track date range
-    bookingRows.forEach((r) => {
-      if (r['Booking Created Time']) {
-        const d = new Date(r['Booking Created Time']);
-        if (d < dateMin) dateMin.setTime(d.getTime());
-        if (d > dateMax) dateMax.setTime(d.getTime());
-      }
-    });
   }
 
-  const dateRange = dateMin < dateMax ? `${dateMin.toISOString().split('T')[0]}~${dateMax.toISOString().split('T')[0]}` : 'unknown~unknown';
+  const dates = shortResults
+    .map((r) => r['Date creation'] as string)
+    .filter(Boolean)
+    .sort();
+  const dateRange = dates.length > 0
+    ? `${dates[0]}~${dates[dates.length - 1]}`
+    : 'unknown~unknown';
 
   // 4. Invoice reports
   const invoiceResult = generateInvoiceReport(shortResults);
@@ -229,33 +223,41 @@ export async function runSales(config: SalesConfig, files: File[]): Promise<Sale
     }
   }
 
-  // 10. Generate Invoice PDF (from short report data)
-  let invoicePdfBlob: Blob | null = null;
-  let invoicePdfName = '';
-  try {
-    if (shortResults.length > 0) {
-      invoicePdfBlob = await generateInvoicePDF({
-        companyInfo: {
-          name: 'Nouris Ferries',
-          agentCode: shortResults[0]['Code agent'] || 'N/A',
-          gsa: shortResults[0]['GSA agent'] || 'N/A',
-        },
-        invoiceDetails: {
-          invoiceNumber: `${config.downloadDate.replace(/-/g, '')}00001`,
-          invoiceDate: config.downloadDate,
-          dueDate: new Date(new Date(config.downloadDate).getTime() + 15 * 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split('T')[0],
-          currency: shortResults[0]['Devise'] || 'DZD',
-        },
-        bookingsData: shortResults,
-      });
+  // 10. Generate Invoice PDFs (one per GSA from short report data)
+  const salesInvoicePdfs: Array<{ blob: Blob; name: string }> = [];
 
-      invoicePdfName = `${generateId()}_dl${config.downloadDate}_cr${dateRange}_SalesInvoice.pdf`;
+  if (shortResults.length > 0) {
+    const gsaGrouped = groupBy(shortResults, 'GSA agent' as any);
+
+    for (const [gsaName, gsaRows] of gsaGrouped) {
+      try {
+        const gsaLabel = gsaName || 'Unknown';
+        const blob = await generateInvoicePDF({
+          companyInfo: {
+            name: 'Nouris Ferries',
+            agentCode: gsaRows[0]['Code agent'] || 'N/A',
+            gsa: gsaLabel,
+          },
+          invoiceDetails: {
+            invoiceNumber: `${config.downloadDate.replace(/-/g, '')}00001`,
+            invoiceDate: config.downloadDate,
+            dueDate: new Date(new Date(config.downloadDate).getTime() + 15 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split('T')[0],
+            currency: gsaRows[0]['Devise'] || 'DZD',
+          },
+          bookingsData: gsaRows,
+        });
+
+        const safeName = gsaLabel.replace(/[^a-zA-Z0-9_-]/g, '_');
+        salesInvoicePdfs.push({
+          blob,
+          name: `${generateId()}_dl${config.downloadDate}_cr${dateRange}_SalesInvoice_${safeName}.pdf`,
+        });
+      } catch (error) {
+        console.error(`Error generating PDF for GSA ${gsaName}:`, error);
+      }
     }
-  } catch (error) {
-    console.error('Error generating invoice PDF:', error);
-    // Continue without PDF if generation fails
   }
 
   return {
@@ -273,8 +275,7 @@ export async function runSales(config: SalesConfig, files: File[]): Promise<Sale
     salesDetailedName: detailedName,
     salesSplitByDepartureBlob: splitByDepartureBlob,
     salesSplitByDepartureName: splitByDepartureName,
-    salesInvoicePdfBlob: invoicePdfBlob,
-    salesInvoicePdfName: invoicePdfName,
+    salesInvoicePdfs,
   };
 }
 
@@ -679,25 +680,31 @@ function generateControlReport(rows: Row[]): ControlReportResult {
   );
 
   if (acdRowsNouris.length > 0) {
-    const refGrouped = groupBy(acdRowsNouris, 'Reference' as any);
+    const withRefNouris = acdRowsNouris.filter((r) => r['Reference']);
+    const withoutRefNouris = acdRowsNouris.filter((r) => !r['Reference']);
+
+    const refGrouped = groupBy(withRefNouris, 'Reference' as any);
     nourisSheets['Cas_ACD_Ref_Doublon'] = [...refGrouped]
       .filter(([, group]) => group.length > 1)
       .flatMap(([, group]) => group);
     nourisSheets['Cas_ACD_Ref_Unique'] = [...refGrouped]
       .filter(([, group]) => group.length === 1)
       .flatMap(([, group]) => group);
-    nourisSheets['Cas_ACD_Sans_Ref'] = acdRowsNouris.filter((r) => !r['Reference']);
+    nourisSheets['Cas_ACD_Sans_Ref'] = withoutRefNouris;
   }
 
   if (acdRowsGsa.length > 0) {
-    const refGrouped = groupBy(acdRowsGsa, 'Reference' as any);
+    const withRefGsa = acdRowsGsa.filter((r) => r['Reference']);
+    const withoutRefGsa = acdRowsGsa.filter((r) => !r['Reference']);
+
+    const refGrouped = groupBy(withRefGsa, 'Reference' as any);
     gsaSheets['Cas_ACD_Ref_Doublon'] = [...refGrouped]
       .filter(([, group]) => group.length > 1)
       .flatMap(([, group]) => group);
     gsaSheets['Cas_ACD_Ref_Unique'] = [...refGrouped]
       .filter(([, group]) => group.length === 1)
       .flatMap(([, group]) => group);
-    gsaSheets['Cas_ACD_Sans_Ref'] = acdRowsGsa.filter((r) => !r['Reference']);
+    gsaSheets['Cas_ACD_Sans_Ref'] = withoutRefGsa;
   }
 
   // Other anomalies

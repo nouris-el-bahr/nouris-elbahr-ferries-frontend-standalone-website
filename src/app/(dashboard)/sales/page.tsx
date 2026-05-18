@@ -254,14 +254,10 @@ export default function SalesPage() {
                       },
                     ]
                   : []),
-                ...(result.salesInvoicePdfBlob
-                  ? [
-                      {
-                        name: result.salesInvoicePdfName,
-                        blob: result.salesInvoicePdfBlob,
-                      },
-                    ]
-                  : []),
+                ...(result.salesInvoicePdfs ?? []).map((pdf: { blob: Blob; name: string }) => ({
+                  name: pdf.name,
+                  blob: pdf.blob,
+                })),
               ]}
               onDownload={triggerDownload}
             />
