@@ -189,26 +189,32 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
   pdf.setFontSize(9);
 
   if (options.billedGSA) {
-    pdf.text(`Nom: ${options.billedGSA.name}`, margin + logoWidth + 5, yPos);
-    yPos += 4;
+    const billedInfoLines = [];
+    if (options.billedGSA.name) {
+      billedInfoLines.push(`Nom: ${options.billedGSA.name}`);
+    }
     if (options.billedGSA.address) {
-      pdf.text(`Adresse: ${options.billedGSA.address}`, margin + logoWidth + 5, yPos);
-      yPos += 4;
+      billedInfoLines.push(`Adresse: ${options.billedGSA.address}`);
     }
     if (options.billedGSA.email) {
-      pdf.text(`Email: ${options.billedGSA.email}`, margin + logoWidth + 5, yPos);
-      yPos += 4;
+      billedInfoLines.push(`Email: ${options.billedGSA.email}`);
     }
     if (options.billedGSA.website) {
-      pdf.text(`Site: ${options.billedGSA.website}`, margin + logoWidth + 5, yPos);
+      billedInfoLines.push(`Site: ${options.billedGSA.website}`);
+    }
+    for (const line of billedInfoLines) {
+      pdf.text(line, margin + logoWidth + 5, yPos, { maxWidth: 80, align: 'left' });
       yPos += 4;
     }
   } else {
-    pdf.text(`Code Agent: ${options.companyInfo.agentCode}`, margin + logoWidth + 5, yPos);
-    yPos += 4;
-    pdf.text(`Nom de l'Agent: ${options.companyInfo.name}`, margin + logoWidth + 5, yPos);
-    yPos += 4;
-    pdf.text(`GSA: ${options.companyInfo.gsa}`, margin + logoWidth + 5, yPos);
+    const agencyInfoLines = [];
+    agencyInfoLines.push(`Code Agence: ${options.companyInfo.agentCode}`);
+    agencyInfoLines.push(`Nom de l'Agence: ${options.companyInfo.name}`);
+    agencyInfoLines.push(`GSA: ${options.companyInfo.gsa}`);
+    for (const line of agencyInfoLines) {
+      pdf.text(line, margin + logoWidth + 5, yPos, { maxWidth: 80, align: 'left' });
+      yPos += 4;
+    }
   }
 
   // Right column: Company info (right of stamp)
