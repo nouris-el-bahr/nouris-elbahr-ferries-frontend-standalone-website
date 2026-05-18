@@ -210,6 +210,10 @@ export async function runSales(config: SalesConfig, files: File[]): Promise<Sale
       'Nom client',
       'Prenom client',
       'Reference',
+      'Code depart aller',
+      'Check-in aller',
+      'Code depart retour',
+      'Check-in retour',
     ]);
     detailedBlob = generateXlsxBlob([{ name: 'Detailed', rows: cleaned }]);
   }
@@ -464,15 +468,23 @@ function extractBookingData(
 
   if (departTimes.length === 1) {
     const journeyRows = bookingRows.filter((r) => r['Departure Time'] === departTimes[0]);
-    const journeyCodes = journeyRows.map((r) => r['Journey Code']).join(',');
 
-    if (journeyCodes.includes('ALG') || journeyCodes.includes('ORN')) {
-      alCode = journeyRows[0]?.['Departure Code'] || '';
-      alChk = journeyRows.some((r) => r['Checked-In'] === true || r['Checked-In'] === 1);
+    const alRows = journeyRows.filter((r) => {
+      const code = r['Journey Code'] || '';
+      return code.includes('ALG') || code.includes('ORN');
+    });
+    const reRows = journeyRows.filter((r) => {
+      const code = r['Journey Code'] || '';
+      return code.includes('MAR') || code.includes('ALC');
+    });
+
+    if (alRows.length > 0) {
+      alCode = alRows[0]['Departure Code'] || '';
+      alChk = alRows.some((r) => r['Checked-In'] === true || r['Checked-In'] === 1);
     }
-    if (journeyCodes.includes('MAR') || journeyCodes.includes('ALC')) {
-      reCode = journeyRows[0]?.['Departure Code'] || '';
-      reChk = journeyRows.some((r) => r['Checked-In'] === true || r['Checked-In'] === 1);
+    if (reRows.length > 0) {
+      reCode = reRows[0]['Departure Code'] || '';
+      reChk = reRows.some((r) => r['Checked-In'] === true || r['Checked-In'] === 1);
     }
   } else if (departTimes.length >= 2) {
     const alRows = bookingRows.filter((r) => r['Departure Time'] === departTimes[0]);

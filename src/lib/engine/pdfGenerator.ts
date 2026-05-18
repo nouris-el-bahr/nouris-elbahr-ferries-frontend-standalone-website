@@ -155,7 +155,7 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
     const stampUrl = URL.createObjectURL(stampBlob);
     const stampWidth = 41.6;
     const stampHeight = 40;
-    const stampX = pageWidth / 2;
+    const stampX = pageWidth / 2 + 10;
     const stampY = 27;
     pdf.addImage(stampUrl, 'PNG', stampX, stampY, stampWidth, stampHeight);
   } catch (error) {
@@ -203,7 +203,7 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
       billedInfoLines.push(`Site: ${options.billedGSA.website}`);
     }
     for (const line of billedInfoLines) {
-      pdf.text(line, margin + logoWidth + 5, yPos, { maxWidth: 80, align: 'left' });
+      pdf.text(line, margin + logoWidth + 5, yPos, { maxWidth: 100, align: 'left' });
       yPos += 4;
     }
   } else {
@@ -212,13 +212,13 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
     agencyInfoLines.push(`Nom de l'Agence: ${options.companyInfo.name}`);
     agencyInfoLines.push(`GSA: ${options.companyInfo.gsa}`);
     for (const line of agencyInfoLines) {
-      pdf.text(line, margin + logoWidth + 5, yPos, { maxWidth: 80, align: 'left' });
+      pdf.text(line, margin + logoWidth + 5, yPos, { maxWidth: 100, align: 'left' });
       yPos += 4;
     }
   }
 
   // Right column: Company info (right of stamp)
-  const rightColX = pageWidth / 2 + 45;
+  const rightColX = pageWidth / 2 + 55;
   pdf.setFontSize(10);
   pdf.setFont('helvetica', 'bold');
 
@@ -353,22 +353,19 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
   const colCount = displayHeaders.length;
   const baseColWidth = (pageWidth - 2 * margin) / colCount;
   
-  // Make TTC and Commission columns 20% bigger, Devise column 30% smaller
+  // Make TTC and Commission columns 20% bigger
   const ttcIndex = displayHeaders.indexOf('TTC');
   const commissionIndex = displayHeaders.indexOf('Commission');
-  const deviseIndex = displayHeaders.indexOf('Devise');
   
   // Width adjustments
   const ttcIncrease = baseColWidth * 0.2; // TTC gets 20% wider
   const commissionIncrease = baseColWidth * 0.2; // Commission also gets 20% wider
-  const deviseDecrease = baseColWidth * 0.3; // Devise gets 30% narrower
   const totalIncrease = ttcIncrease + commissionIncrease;
-  const netChange = totalIncrease + deviseDecrease;
-  
+
   // Count columns that need adjustment
   const widenColumns = [ttcIndex, commissionIndex].filter(idx => idx !== -1);
-  const otherColumnsCount = colCount - widenColumns.length - (deviseIndex !== -1 ? 1 : 0);
-  
+  const otherColumnsCount = colCount - widenColumns.length;
+
   const getColWidth = (index: number): number => {
     if (index === ttcIndex) {
       return baseColWidth + ttcIncrease;
@@ -376,12 +373,9 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
     if (index === commissionIndex) {
       return baseColWidth + commissionIncrease;
     }
-    if (index === deviseIndex) {
-      return baseColWidth - deviseDecrease;
-    }
     // For other columns, slightly adjust to maintain total width
     if (otherColumnsCount > 0) {
-      return baseColWidth - (netChange / otherColumnsCount);
+      return baseColWidth - (totalIncrease / otherColumnsCount);
     }
     return baseColWidth;
   };
