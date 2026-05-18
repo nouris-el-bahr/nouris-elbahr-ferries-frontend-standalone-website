@@ -121,7 +121,7 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
     });
 
     const aspectRatio = img.width / img.height;
-    logoHeight = 20;
+    logoHeight = options.invoiceType === 'GSA' ? 30 : 20;
     logoWidth = logoHeight * aspectRatio;
 
     pdf.addImage(logoUrl, 'PNG', margin, 8, logoWidth, logoHeight);
