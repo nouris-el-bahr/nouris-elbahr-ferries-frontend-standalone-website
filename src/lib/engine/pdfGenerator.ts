@@ -161,6 +161,32 @@ export async function generateInvoicePDF(options: PDFGeneratorOptions): Promise<
     console.warn(`Stamp not found: ${stampPath}`);
   }
 
+  // Left column: Company info and issuer details
+  const leftColX = margin;
+  let leftInfoY = 8;
+
+  if (options.issuingCompany) {
+    pdf.setFontSize(8);
+    pdf.setFont('helvetica', 'normal');
+
+    if (options.issuingCompany.companyLegal) {
+      pdf.text(options.issuingCompany.companyLegal, leftColX, leftInfoY, { maxWidth: 40 });
+      leftInfoY += 3;
+    }
+    if (options.issuingCompany.address) {
+      pdf.text(options.issuingCompany.address, leftColX, leftInfoY, { maxWidth: 40 });
+      leftInfoY += 3;
+    }
+    if (options.issuingCompany.email) {
+      pdf.text(options.issuingCompany.email, leftColX, leftInfoY, { maxWidth: 40 });
+      leftInfoY += 3;
+    }
+    if (options.issuingCompany.website) {
+      pdf.text(options.issuingCompany.website, leftColX, leftInfoY, { maxWidth: 40 });
+      leftInfoY += 3;
+    }
+  }
+
   // Left column: Invoice title with logo
   let yPos = 12;
   pdf.setFontSize(14);

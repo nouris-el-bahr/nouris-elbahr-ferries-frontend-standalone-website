@@ -242,13 +242,22 @@ export async function runSales(config: SalesConfig, files: File[]): Promise<Sale
 
           // Determine company info based on invoice type
           let issuingCompany = undefined;
-          let logoPath = '/logo_zaatcha.png';
-          let stampPath = '/stamp_zaatcha.png';
+          let logoPath = '/logo_nouris.png';
+          let stampPath = '/stamp_nouris.png';
 
           if (invoiceType === 'GSA') {
             // GSA mode: Nouris invoices the GSA
+            issuingCompany = {
+              name: 'Société de Transport Maritime de Voyageurs',
+              companyLegal: 'SARL NOURIS ELBAHR MM',
+              address: 'Coopérative des Communaux N° 40, Kouba, Alger',
+              email: '',
+              website: 'https://www.nouriselbahrferries.com/',
+            };
+          } else {
+            // Agence mode: GSA invoices agencies - use GSA branding
             const gsaInfo = gsaData[gsaName as keyof typeof gsaData];
-            if (gsaInfo && gsaInfo.id !== 'Nouris') {
+            if (gsaInfo) {
               issuingCompany = {
                 name: gsaInfo.name,
                 address: gsaInfo.address,
@@ -257,31 +266,14 @@ export async function runSales(config: SalesConfig, files: File[]): Promise<Sale
               };
               logoPath = `/logo_${gsaInfo.id.toLowerCase()}.png`;
               stampPath = `/stamp_${gsaInfo.id.toLowerCase()}.png`;
-            } else {
-              // Use Nouris for internal GSAs
-              issuingCompany = {
-                name: 'Société de Transport Maritime de Voyageurs',
-                companyLegal: 'SARL NOURIS ELBAHR MM',
-                address: 'Coopérative des Communaux N° 40, Kouba, Alger',
-                website: 'https://www.nouriselbahrferries.com/',
-              };
-              logoPath = '/logo_nouris.png';
-              stampPath = '/stamp_nouris.png';
-            }
-          } else {
-            // Agence mode: GSA invoices agencies - use GSA branding
-            const gsaInfo = gsaData[gsaName as keyof typeof gsaData];
-            if (gsaInfo) {
-              logoPath = `/logo_${gsaInfo.id.toLowerCase()}.png`;
-              stampPath = `/stamp_${gsaInfo.id.toLowerCase()}.png`;
             }
           }
 
           const blob = await generateInvoicePDF({
             companyInfo: {
-              name: invoiceType === 'GSA' ? gsaLabel : 'Nouris Ferries',
+              name: invoiceType === 'GSA' ? gsaLabel : currencyRows[0]['Code agent'] || 'N/A',
               agentCode: currencyRows[0]['Code agent'] || 'N/A',
-              gsa: invoiceType === 'GSA' ? gsaLabel : currencyRows[0]['GSA agent'] || 'N/A',
+              gsa: gsaLabel,
             },
             invoiceDetails: {
               invoiceNumber: `${config.downloadDate.replace(/-/g, '')}00001`,
